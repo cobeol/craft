@@ -12,3 +12,6 @@ build/
 
 # Debug server folder
 .server/
+
+## Test
+.github/
