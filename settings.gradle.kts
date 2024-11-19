@@ -1,15 +1,16 @@
-rootProject.name = "sample"
+rootProject.name = "craft"
 
 val prefix = rootProject.name
 
+include("$prefix-core")
 include("$prefix-api")
 
-val core = "$prefix-core"
-include(core)
-file(core).listFiles()?.filter {
+val dongle = "$prefix-dongle"
+include(dongle)
+file(dongle).listFiles()?.filter {
     it.isDirectory && it.name.startsWith("v")
 }?.forEach { file ->
-    include(":$core:${file.name}")
+    include(":$dongle:${file.name}")
 }
 
 include("$prefix-plugin")

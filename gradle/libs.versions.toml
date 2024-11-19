@@ -1,9 +1,9 @@
 [versions]
-kotlin = "1.8.22"
+kotlin = "1.9.20"
+shadow = "8.1.1"
 dokka = "1.8.20"
-shadow = "7.1.2"
-paper = "1.17.1-R0.1-SNAPSHOT"
-paperweight = "1.5.5"
+paper = "1.21-R0.1-SNAPSHOT"
+paperweight = "1.7.4"
 
 [libraries]
 paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
