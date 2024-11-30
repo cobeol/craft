@@ -16,27 +16,27 @@ open class GUIWidget(
 ) {
     var padTop = if (padTop == -1) padding else padTop
         private set(value) {
-            require(value > 0) { "여백은 양수여야 합니다." }
+            require(value > 0) { "패딩은 양수여야 합니다." }
             field = value
         }
 
     var padBottom = if (padBottom == -1) padding else padBottom
         private set(value) {
-            require(value > 0) { "여백은 양수여야 합니다." }
+            require(value > 0) { "패딩은 양수여야 합니다." }
             field = value
         }
 
     var padLeft = if (padLeft == -1) padding else padLeft
         private set(value) {
-            require(value > 0) { "여백은 양수여야 합니다." }
-            require((value + padRight + width) <= 9) { "여백(Left + Right) + 너비는 9를 넘을 수 없습니다." }
+            require(value > 0) { "패딩은 양수여야 합니다." }
+            require((value + padRight + width) <= 9) { "패딩(Left + Right) + 너비는 9를 넘을 수 없습니다." }
             field = value
         }
 
     var padRight = if (padRight == -1) padding else padRight
         private set(value) {
-            require(value > 0) { "여백은 양수여야 합니다." }
-            require((value + padRight + width) <= 9) { "여백(Left + Right) + 너비는 9를 넘을 수 없습니다." }
+            require(value > 0) { "패딩은 양수여야 합니다." }
+            require((value + padRight + width) <= 9) { "패딩(Left + Right) + 너비는 9를 넘을 수 없습니다." }
             field = value
         }
 

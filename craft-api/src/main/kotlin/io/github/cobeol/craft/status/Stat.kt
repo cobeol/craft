@@ -127,9 +127,9 @@ open class Stat {
     }
 
     /**
-     * 레벨을 추가합니다. [expEvent]에서 사용할 함수입니다.
+     * 능력치를 추가합니다. [expEvent]에서 사용할 함수입니다.
      *
-     * @param value 추가될 레벨로, 음수일 수 없습니다.
+     * @param value 추가될 능력치로, 음수일 수 없습니다.
      */
     fun addLevel(value: Int) {
         require(value >= 0) { "{value}는 음수일 수 없습니다." }
