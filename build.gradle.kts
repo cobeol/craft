@@ -1,7 +1,8 @@
 plugins {
     idea
     alias(libs.plugins.kotlin)
-    alias(libs.plugins.dokka)
+    alias(libs.plugins.serialization) apply false
+    alias(libs.plugins.dokka) apply false
 }
 
 java {
@@ -18,6 +19,7 @@ allprojects {
 
 subprojects {
     apply(plugin = rootProject.libs.plugins.kotlin.get().pluginId)
+    apply(plugin = rootProject.libs.plugins.serialization.get().pluginId)
 
     repositories {
         maven("https://papermc.io/repo/repository/maven-public/")
@@ -28,6 +30,9 @@ subprojects {
 
         implementation(kotlin("stdlib"))
         implementation(kotlin("reflect"))
+
+        implementation(rootProject.libs.json)
+        implementation(rootProject.libs.protobuf)
     }
 }
 

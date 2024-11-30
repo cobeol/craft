@@ -1,16 +1,25 @@
-# PaperMC plugin sample (1.17.1+)
+# Cobeol Craft Api (1.21+)
 
-[![Kotlin](https://img.shields.io/badge/java-17-ED8B00.svg?logo=java)](https://www.azul.com/)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.8.22-585DEF.svg?logo=kotlin)](http://kotlinlang.org)
-[![Gradle](https://img.shields.io/badge/gradle-8.2.1-02303A.svg?logo=gradle)](https://gradle.org)
+[![Kotlin](https://img.shields.io/badge/java-21-ED8B00.svg?logo=java)](https://www.azul.com/)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.9.20-585DEF.svg?logo=kotlin)](http://kotlinlang.org)
+[![Gradle](https://img.shields.io/badge/gradle-8.10-02303A.svg?logo=gradle)](https://gradle.org)
 [![GitHub](https://img.shields.io/github/license/monun/paper-sample-complex)](https://www.gnu.org/licenses/gpl-3.0.html)
-[![Kotlin](https://img.shields.io/badge/youtube-각별-red.svg?logo=youtube)](https://www.youtube.com/channel/UCDrAR1OWC2MD4s0JLetN0MA)
+[![Kotlin](https://img.shields.io/badge/youtube-코벌-red.svg?logo=youtube)](https://www.youtube.com/@cobeol0111)
 
 ## 프로젝트 구성하기
 
 1. 저장소 복제 `git clone https://github.com/monun/paper-sample.git`
 2. 프로젝트 이름 변경 (`settings.gradle.kts` 의 `rootProject.name`)
 3. 구성 태스크 실행 `./gradlew setupModules`
+
+---
+
+#### 개요
+
+[monun/tap](https://github.com/monun/tap), [monun/psychics](https://github.com/monun/psychics/)를 참고하여, 컨텐츠에서 사용할 플러그인을 만들기 위한 메인 플러그인 api를 제작하였습니다.
+
+사용자 정의 능력치나 스킬, 그리고 아바타 같은 것들이 있습니다.
+
 
 ---
 
@@ -44,11 +53,4 @@ PaperMC 와 상호작용할 JavaPlugin 을 포함한 코드
 
 * `./gradlew publishToMavenLocal -Pdev` 로 로컬 저장소에 mojangmapping 버전의 jar 파일을 배포 가능
 
----
-
-#### 참고
-
-* `api:jar` 태스크를 참조하는 작업 후 `clean` 태스크 실행 불가
-    * (gradle daemon이 api.jar 를 잡고 있음)
-* SNAPSHOT 버전일 경우 `plugin:clipJar` 태스크를 통한 플러그인이 서버에서 실행되지 않음
-    * SNAPSHOT 버전은 항상 mavenCentral 에서 최신 버전을 확인하는데 실제로 서버에 존재하지 않아서 생기는 문제 
+--- 

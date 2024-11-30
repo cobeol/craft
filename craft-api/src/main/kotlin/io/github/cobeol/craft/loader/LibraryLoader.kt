@@ -2,6 +2,8 @@ package io.github.cobeol.craft.loader
 
 import org.bukkit.Bukkit
 import java.lang.reflect.InvocationTargetException
+import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.memberProperties
 
 object LibraryLoader {
 
@@ -105,3 +107,40 @@ object LibraryLoader {
 
     val libraryVersion by lazy { "v${minecraftVersion.replace('.', '_')}" }
 }
+
+/**
+ * 특정 부모 클래스를 상속받은 자식 요소의 인스턴스를 가져오는 확장 함수
+ */
+inline fun <reified T : Any> Any.getChildInstancesOfType(): List<T> {
+    val javaClass = this::class.java
+    return javaClass.declaredFields
+        .filter { field ->
+            field.isAccessible = true
+            val type = field.type.kotlin
+            type.isSubclassOf(T::class)
+        }
+        .mapNotNull { field ->
+            this::class.memberProperties
+                .find { it.name == field.name }
+                ?.getter
+                ?.call(this) as? T
+        }
+//    return this::class.primaryConstructor?.parameters
+//        ?.mapNotNull { param ->
+//            this::class.memberProperties.find { it.name == param.name }
+//        }
+//        ?.filter { it.returnType.classifier is KClass<*> }
+//        ?.filter { (it.returnType.classifier as KClass<*>).isSubclassOf(T::class) }
+//        ?.mapNotNull { it.getter.call(this) as? T }
+//        ?: emptyList()
+//    return this::class.memberProperties
+//        .filter { it.returnType.classifier is KClass<*> }
+//        .filter { (it.returnType.classifier as KClass<*>).isSubclassOf(T::class) }
+//        .mapNotNull { it.getter.call(this) as? T }
+}
+
+//inline fun <reified T : Any> Any.getChildrenOfType(): List<T> {
+//    return this::class.declaredMemberProperties
+//        .filter { it.returnType.isSubtypeOf(T::class.starProjectedType) }
+//        .mapNotNull { it.getter.call(this) as? T }
+//}

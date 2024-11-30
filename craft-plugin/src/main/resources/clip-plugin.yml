@@ -6,3 +6,5 @@ libraries:
   - 'org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}'
   - 'org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}'
   - '${group}:${packageName}-core:${version}'
+commands:
+  ${pluginCommands}
