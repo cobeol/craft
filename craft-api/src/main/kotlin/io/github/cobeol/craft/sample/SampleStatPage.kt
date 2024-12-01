@@ -47,15 +47,3 @@ class SampleStatBuilder(stats: SampleStats): GUIBuilder() {
         page(SampleStatPage(stats))
     }
 }
-
-//class StatHeaderWidget(
-//    width: Int,
-//    height: Int,
-//    icon: ItemStack,
-//    holder: InventoryHolder?,
-//    padding: Int = 0
-//): GUIWidget(width, height, icon, holder, padding) {
-////    init {
-////        width
-////    }
-//}

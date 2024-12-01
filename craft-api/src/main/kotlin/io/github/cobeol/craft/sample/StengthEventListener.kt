@@ -19,11 +19,6 @@ interface BlockSupport {
 internal val BlockSupportNMS = LibraryLoader.loadNMS(BlockSupport::class.java)
 
 class StrengthEventListener(private val stat: StrengthStat): StatEventListener<StrengthStat>(stat) {
-//    @EventHandler
-//    fun onPlayerJoinEvent(event: PlayerJoinEvent) {
-//        stat.addExp(1)
-//    }
-
     @EventHandler
     fun onBlockPlaceEvent(event: BlockPlaceEvent) {
         if (event.player.uniqueId != stat.uniqueId) return

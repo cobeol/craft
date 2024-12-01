@@ -36,7 +36,6 @@ class AgilityEventListener(private val stat: AgilityStat): StatEventListener<Agi
         if (from.x == to.x && from.z == to.z)
             return
 
-        //player.sendMessage(player.velocity.length().toString())
         stat.addExp(round(player.velocity.length() * (3/2)).toLong())
     }
 }

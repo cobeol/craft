@@ -91,18 +91,6 @@ fun TooltipBuilder.contour(length: Int): Component =
         .color(NamedTextColor.WHITE)
         .build()
 
-//fun TooltipBuilder._text(content: String, decorations: HashMap<TextDecoration, Boolean> = hashMapOf(), color: NamedTextColor = NamedTextColor.WHITE) =
-//    text()
-//        .decoration(TextDecoration.ITALIC, false)
-//        .also {
-//            decorations.forEach { decoration ->
-//                it.decoration(decoration.key, decoration.value)
-//            }
-//        }
-//        .content(content)
-//        .color(color)
-//        .build()
-
 class TooltipSection(
     val header: String,
     val body: MutableList<Component>
