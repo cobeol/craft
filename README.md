@@ -6,51 +6,24 @@
 [![GitHub](https://img.shields.io/github/license/monun/paper-sample-complex)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![Kotlin](https://img.shields.io/badge/youtube-코벌-red.svg?logo=youtube)](https://www.youtube.com/@cobeol0111)
 
-## 프로젝트 구성하기
+---
 
-1. 저장소 복제 `git clone https://github.com/monun/paper-sample.git`
-2. 프로젝트 이름 변경 (`settings.gradle.kts` 의 `rootProject.name`)
-3. 구성 태스크 실행 `./gradlew setupModules`
+* ### Features
+    * 스탯, 스탯 이벤트 리스너
+    * 상태창 GUI {인벤토리, 블럭 디스플레이*}
+    * 인벤토리 (x, y) 좌표로 구분하는 함수
+    * PersistentData API 접근성 개선 ([mounun/tap](https://github.com/monun/tap): 일부만 사용하기 위해, 코드만 잘라왔습니다)
+
+* ### Supported minecraft versions
+    * 1.21
+    * 1.21.1
 
 ---
 
-#### 개요
+### NOTE
 
 [monun/tap](https://github.com/monun/tap), [monun/psychics](https://github.com/monun/psychics/)를 참고하여, 컨텐츠에서 사용할 플러그인을 만들기 위한 메인 플러그인 api를 제작하였습니다.
 
 사용자 정의 능력치나 스킬, 그리고 아바타 같은 것들이 있습니다.
 
-
 ---
-
-#### API
-
-최상위 계층 인터페이스
-
----
-
-#### CORE
-
-API의 구현, 실제 실행 코드, `net.minecraft.server` 를 참조하는 코드
-
-하위에 참조할 버전 이름의 프로젝트를 생성 `ex) v1.18`
-
----
-
-#### PLUGIN
-
-PaperMC 와 상호작용할 JavaPlugin 을 포함한 코드
-
-* `./gradlew devJar` mojang mapped bundler jar
-* `./gradlew reobfJar` reobfusecated bundler jar
-* `./gradlew clipJar` clip jar
-
----
-
-#### PUBLISH
-
-배포용 프로젝트
-
-* `./gradlew publishToMavenLocal -Pdev` 로 로컬 저장소에 mojangmapping 버전의 jar 파일을 배포 가능
-
---- 
