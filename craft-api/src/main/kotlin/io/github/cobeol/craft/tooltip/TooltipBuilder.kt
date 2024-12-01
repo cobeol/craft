@@ -10,7 +10,6 @@ import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import kotlin.math.max
-import io.github.cobeol.craft.tooltip._text
 
 class TooltipBuilder {
     private var header: Component = text().build()
@@ -109,14 +108,3 @@ class TooltipSection(
     val body: MutableList<Component>
 )
 
-fun _text(content: String, decorations: HashMap<TextDecoration, Boolean> = hashMapOf(), color: NamedTextColor = NamedTextColor.WHITE) =
-    text()
-        .decoration(TextDecoration.ITALIC, false)
-        .also {
-            decorations.forEach { decoration ->
-                it.decoration(decoration.key, decoration.value)
-            }
-        }
-        .content(content)
-        .color(color)
-        .build()
