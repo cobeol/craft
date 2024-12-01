@@ -1,4 +1,4 @@
-package io.github.cobeol.craft.loader
+package io.github.cobeol.craft.monun.loader
 
 import org.bukkit.Bukkit
 import java.lang.reflect.InvocationTargetException

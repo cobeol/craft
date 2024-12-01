@@ -3,7 +3,7 @@ package io.github.cobeol.craft.sample
 import io.github.cobeol.craft.gui.GUIBuilder
 import io.github.cobeol.craft.gui.GUIPage
 import io.github.cobeol.craft.gui.GUIWidget
-import io.github.cobeol.craft.loader.getChildInstancesOfType
+import io.github.cobeol.craft.monun.loader.getChildInstancesOfType
 import io.github.cobeol.craft.status.Stat
 import io.github.cobeol.craft.tooltip.TooltipBuilder
 import io.github.cobeol.craft.tooltip.TooltipSection

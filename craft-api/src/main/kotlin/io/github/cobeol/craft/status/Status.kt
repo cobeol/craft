@@ -1,7 +1,7 @@
 package io.github.cobeol.craft.status
 
 import io.github.cobeol.craft.gui.GUIBuilder
-import io.github.cobeol.craft.loader.getChildInstancesOfType
+import io.github.cobeol.craft.monun.loader.getChildInstancesOfType
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 

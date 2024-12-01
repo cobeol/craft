@@ -1,6 +1,6 @@
 package io.github.cobeol.craft.internal
 
-import io.github.cobeol.craft.loader.LibraryLoader
+import io.github.cobeol.craft.monun.loader.LibraryLoader
 import io.github.cobeol.craft.Sample
 
 class SampleImpl: Sample {

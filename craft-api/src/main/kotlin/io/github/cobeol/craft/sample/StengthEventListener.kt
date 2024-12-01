@@ -1,6 +1,6 @@
 package io.github.cobeol.craft.sample
 
-import io.github.cobeol.craft.loader.LibraryLoader
+import io.github.cobeol.craft.monun.loader.LibraryLoader
 import io.github.cobeol.craft.status.StatEventListener
 import org.bukkit.attribute.Attribute
 import org.bukkit.block.Block
