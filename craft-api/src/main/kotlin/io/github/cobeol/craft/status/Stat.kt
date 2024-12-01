@@ -36,20 +36,15 @@ open class Stat {
     @Config(required = false)
     @RangeInt(min = 0, max = 10)
     var randomLevel: Int = 0
-        protected set
-//            (value) {
-//            if (level != 0) return
-//
-//            field = value
-//            require(value <= maxLevel) { "{level + randomLevel}은 {maxLevel}보다 클 수 없습니다." }
-//
-//            var nonce = (0..randomLevel).random()
-//            while (level + nonce <= maxLevel) {
-//                nonce = (0..randomLevel).random()
-//            }
-//
-//            level += nonce
-//        }
+        protected set (value) {
+            require(value <= maxLevel) { "{level + randomLevel}은 {maxLevel}보다 클 수 없습니다." }
+
+            field = value
+            if (level != 0)
+                return
+
+            level += (0..randomLevel).random()
+        }
 
     /**
      * 능력치가 이 수치에 도달하면, 더 이상 증가하지 않습니다.
@@ -62,8 +57,6 @@ open class Stat {
     /**
      * 시작 경험치를 정합니다.
      */
-//    @Config(required = false)
-//    @RangeInt(min = 0)
     var exp: Long = 0
         protected set (value) {
             field = value
@@ -88,20 +81,12 @@ open class Stat {
     lateinit var expEvent: StatEventListener<out Stat>
         protected set
 
-
     /**
      * 능력을 표시하는 아이콘입니다.
      */
     @Config("icon", required = false)
      var icon: Material? = null
         protected set
-
-//    /**
-//     * 경험치 이벤트 처리기를 추가합니다.
-//     */
-//    fun initExpEventListener(listener: StatEventListener<Stat>) {
-//        expEventListener = listener
-//    }
 
     /**
      * 경험치에 도달해도, 능력치가 증가하는 것을 막습니다.
