@@ -1,6 +1,5 @@
 package io.github.cobeol.craft.sample
 
-import io.github.cobeol.craft.gui.GUIBuilder
 import io.github.cobeol.craft.gui.GUIPage
 import io.github.cobeol.craft.gui.GUIWidget
 import io.github.cobeol.craft.monun.loader.getChildInstancesOfType
@@ -15,6 +14,8 @@ import org.bukkit.inventory.ItemStack
 class SampleStatPage(stats: SampleStats, isExpHidden: Boolean = false): GUIPage() {
     init {
         title("test")
+
+        header(GUIWidget(1, 1, ItemStack(Material.STONE), null, padTop = 0))
 
         val stats = stats.getChildInstancesOfType<Stat>()
         for (stat in stats) {
@@ -34,16 +35,13 @@ class SampleStatPage(stats: SampleStats, isExpHidden: Boolean = false): GUIPage(
                 )
             }
 
-            val statHeaderWidget = GUIWidget(1, 1, tooltip.build(), null, padding = 1, padTop = 0, padRight = 0)
-            body(statHeaderWidget)
+            val statBodyWidget = GUIWidget(1, 1, tooltip.build(), null, padding = 1, padTop = 0, padRight = 0)
+            body(statBodyWidget)
         }
 
-        header(GUIWidget(1, 1, ItemStack(Material.STONE), null, padTop = 0))
-    }
-}
+        val statFooterWidget = GUIWidget(1, 1, ItemStack(Material.STONE), null, padTop = 1, padLeft = 7)
+        footer(statFooterWidget)
 
-class SampleStatBuilder(stats: SampleStats): GUIBuilder() {
-    init {
-        page(SampleStatPage(stats))
+        handler(SampleStatPageEvent(this))
     }
 }

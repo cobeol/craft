@@ -78,7 +78,7 @@ open class Stat {
      * 경험치가 처리되는 이벤트입니다.
      */
     @Config(required = true)
-    lateinit var expEvent: StatEventListener<out Stat>
+    lateinit var event: StatEventListener<out Stat>
         protected set
 
     /**
@@ -102,7 +102,7 @@ open class Stat {
         protected set
 
     /**
-     * 경험치를 추가합니다. [expEvent]에서 사용할 함수입니다.
+     * 경험치를 추가합니다. [StatEventListener]에서 사용할 함수입니다.
      *
      * @param value 추가될 경험치로, 음수일 수 없습니다.
      */
@@ -112,7 +112,7 @@ open class Stat {
     }
 
     /**
-     * 능력치를 추가합니다. [expEvent]에서 사용할 함수입니다.
+     * 능력치를 추가합니다. [StatEventListener]에서 사용할 함수입니다.
      *
      * @param value 추가될 능력치로, 음수일 수 없습니다.
      */

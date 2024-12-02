@@ -11,7 +11,7 @@ interface Status {
 
     fun registerEvent(plugin: JavaPlugin) {
         val stats = this.stats.getChildInstancesOfType<Stat>()
-        stats.forEach { stat -> Bukkit.getPluginManager().registerEvents(stat.expEvent, plugin) }
+        stats.forEach { stat -> Bukkit.getPluginManager().registerEvents(stat.event, plugin) }
     }
 }
 

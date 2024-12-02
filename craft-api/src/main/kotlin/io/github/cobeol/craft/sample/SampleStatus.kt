@@ -25,7 +25,7 @@ class StrengthStat: Stat() {
         icon = Material.IRON_AXE
         maxLevel = 25
         randomLevel = 5
-        expEvent = StrengthEventListener(this)
+        event = StrengthEventListener(this)
         uniqueId = UUID.fromString("17a80687-4d66-4f83-ad12-f83e06866876")
     }
 }
@@ -36,7 +36,7 @@ class FortitudeStat: Stat() {
         icon = Material.SHIELD
         maxLevel = 25
         randomLevel = 5
-        expEvent = FortitudeEventListener(this)
+        event = FortitudeEventListener(this)
         uniqueId = UUID.fromString("17a80687-4d66-4f83-ad12-f83e06866876")
     }
 }
@@ -47,7 +47,7 @@ class AgilityStat: Stat() {
         icon = Material.FEATHER
         maxLevel = 25
         randomLevel = 5
-        expEvent = AgilityEventListener(this)
+        event = AgilityEventListener(this)
         uniqueId = UUID.fromString("17a80687-4d66-4f83-ad12-f83e06866876")
     }
 }
@@ -58,7 +58,13 @@ class IntelligenceStat: Stat() {
         icon = Material.POTION
         maxLevel = 25
         randomLevel = 5
-        expEvent = IntelligenceEventListener(this)
+        event = IntelligenceEventListener(this)
         uniqueId = UUID.fromString("17a80687-4d66-4f83-ad12-f83e06866876")
+    }
+}
+
+class SampleStatBuilder(stats: SampleStats): GUIBuilder() {
+    init {
+        page(SampleStatPage(stats))
     }
 }

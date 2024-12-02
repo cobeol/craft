@@ -13,7 +13,7 @@ open class GUIBuilder {
 
     fun pages(guiPages: ArrayList<GUIPage>) { pages.addAll(guiPages) }
 
-    fun registerEvent(plugin: JavaPlugin) = pages.forEach { page -> Bukkit.getPluginManager().registerEvents(page.guiEvent, plugin) }
+    fun registerEvent(plugin: JavaPlugin) = pages.forEach { page -> Bukkit.getPluginManager().registerEvents(page.event, plugin) }
 
     fun build(height: Int = 6) {
         val headers: ArrayList<GUIWidget> = ArrayList()
