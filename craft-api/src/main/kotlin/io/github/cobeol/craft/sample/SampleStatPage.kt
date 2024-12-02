@@ -2,6 +2,7 @@ package io.github.cobeol.craft.sample
 
 import io.github.cobeol.craft.gui.GUIPage
 import io.github.cobeol.craft.gui.GUIWidget
+import io.github.cobeol.craft.gui.GUIWidgetHandler
 import io.github.cobeol.craft.monun.loader.getChildInstancesOfType
 import io.github.cobeol.craft.status.Stat
 import io.github.cobeol.craft.tooltip.TooltipBuilder
@@ -9,11 +10,12 @@ import io.github.cobeol.craft.tooltip.TooltipSection
 import io.github.cobeol.craft.tooltip._text
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class SampleStatPage(stats: SampleStats, isExpHidden: Boolean = false): GUIPage() {
     init {
-        title("test")
+        title("\uE001")
 
         header(GUIWidget(1, 1, ItemStack(Material.STONE), null, padTop = 0))
 
@@ -39,9 +41,16 @@ class SampleStatPage(stats: SampleStats, isExpHidden: Boolean = false): GUIPage(
             body(statBodyWidget)
         }
 
-        val statFooterWidget = GUIWidget(1, 1, ItemStack(Material.STONE), null, padTop = 1, padLeft = 7)
-        footer(statFooterWidget)
+        val statFooterWidget = GUIWidget(1, 1, ItemStack(Material.STONE), null, handler = SampleStatPageEvent(this), padTop = 0, padLeft = 7)
+        body(statFooterWidget)
+    }
+}
 
-        handler(SampleStatPageEvent(this))
+class SampleStatPageEvent(statPage: SampleStatPage): GUIWidgetHandler<SampleStatPage>(statPage) {
+    override fun execute(slot: Int, player: Player) {
+        val x = (slot % 9)
+        val y = (slot / 9)
+
+        player.sendMessage("Interaction#1($x, $y)")
     }
 }

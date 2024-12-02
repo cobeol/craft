@@ -14,7 +14,7 @@ import kotlin.math.max
 class TooltipBuilder {
     private var header: Component = text().build()
     private val body: MutableList<TooltipSection> = mutableListOf()
-    private var icon: Material = Material.STONE
+    private var icon: Pair<Material, Int> = Pair(Material.STONE, 0)
     private var length: Int = 16
     private var prefix: String = "•"
 
@@ -24,15 +24,20 @@ class TooltipBuilder {
 
     fun body(sections: MutableList<TooltipSection>) { body.addAll(sections) }
 
-    fun icon(material: Material) { icon = material }
+    fun icon(item: Pair<Material, Int>) { icon = item }
 
     fun length(int: Int) { length = int }
 
     fun prefix(str: String) { prefix = str }
 
     fun build(): ItemStack {
-        val item = ItemStack(icon)
+        val item = ItemStack(icon.first)
         val itemMeta = item.itemMeta
+
+        require(icon.second >= 0) { "CustomModelData는 음수일 수 없습니다." }
+
+        if (icon.second != 0)
+            itemMeta.setCustomModelData(icon.second)
 
         val modifier = AttributeModifier(
             NamespacedKey("cobeol_craft", "none_text"),

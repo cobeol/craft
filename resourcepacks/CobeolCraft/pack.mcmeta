@@ -1,0 +1,10 @@
+{
+    "pack": {
+        "pack_format": 34,
+        "description": [
+            { "text": "코벌 크래프트 GUI", "color": "green" },
+            { "text": "\n" },
+            { "text": "by 코벌", "bold": true, "color": "gray" }
+        ]
+    }
+}

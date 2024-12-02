@@ -1,0 +1,25 @@
+{
+    "providers": [
+        {
+            "file": "minecraft:font/test.png",
+            "type": "bitmap",
+            "chars": ["\uEAAA"],
+            "ascent": 13,
+            "height": 256
+        },
+        {
+            "file": "minecraft:font/space.png",
+            "type": "bitmap",
+            "chars": ["\uE000"],
+            "ascent": -32768,
+            "height": -10
+        },
+        {
+            "file": "minecraft:font/gui/sample_status.png",
+            "type": "bitmap",
+            "chars": ["\uE001"],
+            "ascent": 13,
+            "height": 256
+        }
+    ]
+}

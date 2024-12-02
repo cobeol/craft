@@ -5,6 +5,7 @@ import io.github.cobeol.craft.status.Stat
 import io.github.cobeol.craft.status.Stats
 import io.github.cobeol.craft.status.Status
 import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
 import java.util.UUID
 
 class SampleStatus: Status {
@@ -22,7 +23,7 @@ class SampleStats: Stats {
 class StrengthStat: Stat() {
     init {
         symbol = "STR"
-        icon = Material.IRON_AXE
+        icon = Pair(Material.IRON_AXE, 1)
         maxLevel = 25
         randomLevel = 5
         event = StrengthEventListener(this)
@@ -33,7 +34,7 @@ class StrengthStat: Stat() {
 class FortitudeStat: Stat() {
     init {
         symbol = "FTD"
-        icon = Material.SHIELD
+        icon = Pair(Material.SHIELD, 0)
         maxLevel = 25
         randomLevel = 5
         event = FortitudeEventListener(this)
@@ -44,7 +45,7 @@ class FortitudeStat: Stat() {
 class AgilityStat: Stat() {
     init {
         symbol = "AGL"
-        icon = Material.FEATHER
+        icon = Pair(Material.FEATHER, 0)
         maxLevel = 25
         randomLevel = 5
         event = AgilityEventListener(this)
@@ -55,7 +56,7 @@ class AgilityStat: Stat() {
 class IntelligenceStat: Stat() {
     init {
         symbol = "INT"
-        icon = Material.POTION
+        icon = Pair(Material.POTION, 0)
         maxLevel = 25
         randomLevel = 5
         event = IntelligenceEventListener(this)

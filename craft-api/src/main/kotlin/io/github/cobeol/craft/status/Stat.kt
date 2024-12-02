@@ -5,6 +5,7 @@ import io.github.cobeol.craft.monun.config.RangeInt
 import io.github.cobeol.craft.util.Formula
 import org.bukkit.Material
 import org.bukkit.event.Listener
+import org.bukkit.inventory.ItemStack
 import java.util.*
 
 open class Stat {
@@ -85,7 +86,7 @@ open class Stat {
      * 능력을 표시하는 아이콘입니다.
      */
     @Config("icon", required = false)
-     var icon: Material? = null
+     var icon: Pair<Material, Int>? = null
         protected set
 
     /**
