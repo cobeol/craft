@@ -5,7 +5,6 @@ import io.github.cobeol.craft.status.Stat
 import io.github.cobeol.craft.status.Stats
 import io.github.cobeol.craft.status.Status
 import org.bukkit.Material
-import org.bukkit.inventory.ItemStack
 import java.util.UUID
 
 class SampleStatus: Status {

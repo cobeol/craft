@@ -2,11 +2,11 @@ package io.github.cobeol.craft.status
 
 import io.github.cobeol.craft.monun.config.Config
 import io.github.cobeol.craft.monun.config.RangeInt
-import io.github.cobeol.craft.util.Formula
 import org.bukkit.Material
 import org.bukkit.event.Listener
-import org.bukkit.inventory.ItemStack
 import java.util.*
+import kotlin.math.floor
+import kotlin.math.pow
 
 open class Stat {
     /**
@@ -26,7 +26,7 @@ open class Stat {
     var level: Int = 0
         protected set (value) {
             field = value
-            maxExp = Formula.calculateMaxExp(value, 4)
+            maxExp = calculateMaxExp(value, 4)
         }
 
     /**
@@ -121,6 +121,10 @@ open class Stat {
         require(value >= 0) { "{value}는 음수일 수 없습니다." }
         level += value
     }
+}
+
+fun Stat.calculateMaxExp(level: Int, coefficient: Int = 1): Long {
+    return floor(((level + 2 * 50.0 / 49.0).pow(4.5) * coefficient)).toLong()
 }
 
 open class StatEventListener<T: Stat>(stat: T): Listener

@@ -1,9 +1,7 @@
 package io.github.cobeol.craft.sample
 
-import io.github.cobeol.craft.monun.loader.LibraryLoader
 import io.github.cobeol.craft.status.StatEventListener
 import org.bukkit.attribute.Attribute
-import org.bukkit.block.Block
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -12,17 +10,11 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import kotlin.math.max
 
-interface BlockSupport {
-    fun getHardness(block: Block): Float
-}
-
-internal val BlockSupportNMS = LibraryLoader.loadNMS(BlockSupport::class.java)
-
 class StrengthEventListener(private val stat: StrengthStat): StatEventListener<StrengthStat>(stat) {
     @EventHandler
     fun onBlockPlaceEvent(event: BlockPlaceEvent) {
         if (event.player.uniqueId != stat.uniqueId) return
-        val hardness = BlockSupportNMS.getHardness(event.block)
+        val hardness = event.block.blockData.material.hardness
 
         val _min = if (stat.level <= 5) 1L else 0L
         val _max = hardness.toLong() / 2L
@@ -33,7 +25,7 @@ class StrengthEventListener(private val stat: StrengthStat): StatEventListener<S
     @EventHandler
     fun onBlockBreakEvent(event: BlockBreakEvent) {
         if (event.player.uniqueId != stat.uniqueId) return
-        val hardness = BlockSupportNMS.getHardness(event.block)
+        val hardness = event.block.blockData.material.hardness
 
         val _min = if (stat.level <= 10) 1L else 0L
         val _max = hardness.toLong() / 2L
