@@ -13,6 +13,7 @@
     * 상태창 GUI {인벤토리, 블럭 디스플레이*}
     * 인벤토리 (x, y) 좌표로 구분하는 함수
     * PersistentData API 접근성 개선 ([mounun/tap](https://github.com/monun/tap): 일부만 사용하기 위해, 코드만 잘라왔습니다)
+    * 플레이어가 나가면 소환되는 [아바타](https://www.youtube.com/watch?v=ORCgczrTeUU) (어?..)
 
 * ### Supported minecraft versions
     * 1.21
