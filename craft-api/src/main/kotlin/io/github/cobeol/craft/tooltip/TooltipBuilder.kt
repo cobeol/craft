@@ -90,8 +90,9 @@ fun TooltipBuilder.contour(length: Int): Component =
         .decoration(TextDecoration.BOLD, false)
         .decoration(TextDecoration.STRIKETHROUGH, true)
         .also {
-            for (i in 0..(length - 1))
+            (0..(length - 1)).forEach { _ ->
                 it.append(space())
+            }
         }
         .color(NamedTextColor.WHITE)
         .build()
