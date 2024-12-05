@@ -7,7 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player
 
-class AvatarCommand(private val plugin: CraftPlugin): CommandExecutor {
+class AvatarCreateCommand(private val plugin: CraftPlugin): CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
             sender.sendMessage("플레이어만 사용이 가능합니다.")
