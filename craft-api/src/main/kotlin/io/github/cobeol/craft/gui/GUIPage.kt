@@ -77,8 +77,8 @@ open class GUIPage: GUIfHolder {
             lastY += widget.padTop
             require((lastY + widget.height + widget.padBottom) <= height) { "위젯이 높이를 초과했습니다." }
 
-            for (y in 0..(widget.height - 1)) {
-                for (x in 0..(widget.width - 1)) {
+            for (y in 0 until widget.height) {
+                for (x in 0 until widget.width) {
                     val coordinate: Array<Int> = arrayOf(lastX + x, lastY + y)
                     if (widget.holder != null)
                         holders[coordinate.joinToString("_")] = widget.holder
