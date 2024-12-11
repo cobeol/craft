@@ -33,147 +33,147 @@ import java.util.UUID
 import com.mojang.datafixers.util.Pair
 
 class NMSAvatarSupport: AvatarSupport {
-    val fakePlayers: HashMap<String, ServerPlayer> = hashMapOf()
+    val avatars: HashMap<String, ServerPlayer> = hashMapOf()
 
-    fun getFake(name: String): ServerPlayer? {
-        return fakePlayers.get(name)
+    fun getAvatar(name: String): ServerPlayer? {
+        return avatars.get(name)
     }
 
-    override fun deleteFake(name: String): Boolean {
-        val fakePlayer = getFake(name)
-        if (fakePlayer == null)
+    override fun deleteAvatar(name: String): Boolean {
+        val playerAvatar = getAvatar(name)
+        if (playerAvatar == null)
             return false
 
-        val removeEntitiesPacket = ClientboundRemoveEntitiesPacket(fakePlayer.id)
-        fakePlayer.remove(Entity.RemovalReason.DISCARDED)
+        val removeEntitiesPacket = ClientboundRemoveEntitiesPacket(playerAvatar.id)
+        playerAvatar.remove(Entity.RemovalReason.DISCARDED)
 
         Bukkit.getOnlinePlayers().forEach { _player ->
             (_player as CraftPlayer).handle.connection.send(removeEntitiesPacket)
         }
 
-        fakePlayers.remove(name)
+        avatars.remove(name)
 
         return true
     }
 
-    override fun getFakeInv(name: String): Inventory? {
-        val fakePlayer = getFake(name)
-        if (fakePlayer == null)
+    override fun getAvatarInv(name: String): Inventory? {
+        val playerAvatar = getAvatar(name)
+        if (playerAvatar == null)
             return null
 
-        return CraftInventory(fakePlayer.inventory)
+        return CraftInventory(playerAvatar.inventory)
     }
 
     // TODO 내일 핸들러 만들고 이케하고 저케하자
-    override fun setFakeInv(name: String, inventory: Inventory): Boolean {
-        val fakePlayer = getFake(name)
-        if (fakePlayer == null)
+    override fun setAvatarInv(name: String, inventory: Inventory): Boolean {
+        val playerAvatar = getAvatar(name)
+        if (playerAvatar == null)
             return false
 
         val inv = (inventory as CraftInventory).inventory
-        val fakeInv = fakePlayer.inventory
+        val avatarInv = playerAvatar.inventory
 
         if (inventory.size != (9 * 6))
             return false
 
         for (i in (9 * 2) until inventory.size) {
             inv.getItem(i).let {
-                fakeInv.setItem(i, it)
+                avatarInv.setItem(i, it)
             }
         }
 
-        fakeInv.setItem(8, inv.getItem(8).copy())
-        fakeInv.setItem(EquipmentSlot.MAINHAND.ordinal, ItemStack.EMPTY)
+        avatarInv.setItem(8, inv.getItem(8).copy())
+        avatarInv.setItem(EquipmentSlot.MAINHAND.ordinal, ItemStack.EMPTY)
 
         (3 until 7).forEach { i ->
-            fakeInv.armor[i - 3] = inv.getItem(i).copy()
+            avatarInv.armor[i - 3] = inv.getItem(i).copy()
         }
 
-        updateArmorData(fakePlayer)
+        updateArmorData(playerAvatar)
 
         return true
     }
 
-    fun updateArmorData(fakePlayer: ServerPlayer) {
-        fakePlayer.also {
+    fun updateArmorData(playerAvatar: ServerPlayer) {
+        playerAvatar.also {
             Bukkit.getOnlinePlayers().forEach { player ->
                 val equipmentList = listOf(
-                    Pair(EquipmentSlot.HEAD, fakePlayer.inventory.armor[3]),
-                    Pair(EquipmentSlot.CHEST, fakePlayer.inventory.armor[2]),
-                    Pair(EquipmentSlot.LEGS, fakePlayer.inventory.armor[1]),
-                    Pair(EquipmentSlot.FEET, fakePlayer.inventory.armor[0])
+                    Pair(EquipmentSlot.HEAD, playerAvatar.inventory.armor[3]),
+                    Pair(EquipmentSlot.CHEST, playerAvatar.inventory.armor[2]),
+                    Pair(EquipmentSlot.LEGS, playerAvatar.inventory.armor[1]),
+                    Pair(EquipmentSlot.FEET, playerAvatar.inventory.armor[0])
                 )
-                val equipmentPacket = ClientboundSetEquipmentPacket(fakePlayer.id, equipmentList)
+                val equipmentPacket = ClientboundSetEquipmentPacket(playerAvatar.id, equipmentList)
 
                 sendPacket(equipmentPacket, player)
             }
         }
     }
 
-    override fun setFakeInv(player: Player): Boolean {
-        val fakePlayer = getFake(player.name)
-        if (fakePlayer == null)
+    override fun setAvatarInv(player: Player): Boolean {
+        val playerAvatar = getAvatar(player.name)
+        if (playerAvatar == null)
             return false
 
         val inv = (player as CraftPlayer).handle.inventory
-        val fakeInv = fakePlayer.inventory
+        val avatarInv = playerAvatar.inventory
 
         for (i in 0 until player.inventory.size) {
             inv.getItem(i).let {
-                fakeInv.setItem(i, it)
+                avatarInv.setItem(i, it)
             }
         }
 
         inv.getItem(EquipmentSlot.OFFHAND.ordinal).let {
-            fakeInv.setItem(EquipmentSlot.OFFHAND.ordinal, it)
+            avatarInv.setItem(EquipmentSlot.OFFHAND.ordinal, it)
         }
 
         inv.getItem(EquipmentSlot.MAINHAND.ordinal).let {
-            fakeInv.setItem(EquipmentSlot.MAINHAND.ordinal, it)
+            avatarInv.setItem(EquipmentSlot.MAINHAND.ordinal, it)
         }
 
         inv.armor.forEachIndexed { index, item ->
-            fakeInv.armor[index] = item?.copy() ?: ItemStack.EMPTY
+            avatarInv.armor[index] = item?.copy() ?: ItemStack.EMPTY
         }
 
-        updateArmorData(fakePlayer)
+        updateArmorData(playerAvatar)
 
         return true
     }
 
     override fun setInv(player: Player): Boolean {
-        val fakePlayer = getFake(player.name)
-        if (fakePlayer == null)
+        val playerAvatar = getAvatar(player.name)
+        if (playerAvatar == null)
             return false
 
         val inv = (player as CraftPlayer).handle.inventory
-        val fakeInv = fakePlayer.inventory
+        val avatarInv = playerAvatar.inventory
 
         for (i in 0 until player.inventory.size) {
-            fakeInv.getItem(i).let {
+            avatarInv.getItem(i).let {
                 inv.setItem(i, it)
             }
         }
 
-        fakeInv.armor.forEachIndexed { index, item ->
+        avatarInv.armor.forEachIndexed { index, item ->
             inv.armor[index] = item?.copy() ?: ItemStack.EMPTY
         }
 
-        fakeInv.getItem(EquipmentSlot.OFFHAND.ordinal).let {
+        avatarInv.getItem(EquipmentSlot.OFFHAND.ordinal).let {
             inv.setItem(EquipmentSlot.OFFHAND.ordinal, it)
         }
 
-        fakeInv.getItem(EquipmentSlot.MAINHAND.ordinal).let {
+        avatarInv.getItem(EquipmentSlot.MAINHAND.ordinal).let {
             inv.setItem(EquipmentSlot.MAINHAND.ordinal, it)
         }
 
-        updateArmorData(fakePlayer)
+        updateArmorData(playerAvatar)
 
         return true
     }
 
-    override fun createFake(player: Player, location: Location): Boolean {
-        if (getFake(player.name) != null)
+    override fun createAvatar(player: Player, location: Location): Boolean {
+        if (getAvatar(player.name) != null)
             return false
 
         val server: MinecraftServer = (Bukkit.getServer() as CraftServer).server
@@ -185,57 +185,57 @@ class NMSAvatarSupport: AvatarSupport {
             properties.put("textrue", getTextrue(player.uniqueId))
         }
 
-        val fakePlayer = ServerPlayer(server, serverLevel, profile, (player as CraftPlayer).handle.clientInformation()).apply {
+        val playerAvatar = ServerPlayer(server, serverLevel, profile, (player as CraftPlayer).handle.clientInformation()).apply {
             isInvisible = false
             setPos(location.x, location.y, location.z)
         }
 
-        val entityData = fakePlayer.entityData.apply {
+        val entityData = playerAvatar.entityData.apply {
             set(EntityDataAccessor(17, EntityDataSerializers.BYTE), 127.toByte())
         }
 
         if (entityData.nonDefaultValues == null)
             return false
 
-        fakePlayers[player.name] = fakePlayer
-        sendFakePacket(player.name)
+        avatars[player.name] = playerAvatar
+        sendAvatarPacket(player.name)
 
         return true
     }
 
-    override fun sendFakePackets(): Boolean {
-        fakePlayers.keys.forEach { name ->
-            sendFakePacket(name)
+    override fun sendAvatarPackets(): Boolean {
+        avatars.keys.forEach { name ->
+            sendAvatarPacket(name)
         }
 
         return true
     }
 
-    override fun sendFakePackets(player: Player): Boolean {
-        fakePlayers.keys.forEach { name ->
-            sendFakePacket(name, player)
+    override fun sendAvatarPackets(player: Player): Boolean {
+        avatars.keys.forEach { name ->
+            sendAvatarPacket(name, player)
         }
 
         return true
     }
 
-    override fun sendFakePacket(name: String): Boolean {
+    override fun sendAvatarPacket(name: String): Boolean {
         Bukkit.getOnlinePlayers().forEach { player ->
-            sendFakePacket(name, player)
+            sendAvatarPacket(name, player)
         }
 
         return true
     }
 
-    override fun sendFakePacket(name: String, player: Player): Boolean {
-        val fakePlayer = getFake(name)
-        if (fakePlayer == null)
+    override fun sendAvatarPacket(name: String, player: Player): Boolean {
+        val playerAvatar = getAvatar(name)
+        if (playerAvatar == null)
             return false
 
-        fakePlayer.also {
-            setConnection(fakePlayer, (player as CraftPlayer).handle.connection)
+        playerAvatar.also {
+            setConnection(playerAvatar, (player as CraftPlayer).handle.connection)
 
-            val playerInfoUpdatePacket = ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, fakePlayer)
+            val playerInfoUpdatePacket = ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, playerAvatar)
             val addEntityPacket = ClientboundAddEntityPacket(
                 it.id,
                 it.uuid,
@@ -249,7 +249,7 @@ class NMSAvatarSupport: AvatarSupport {
                 it.deltaMovement,
                 0.0
             )
-            val setEntityDataPacket = ClientboundSetEntityDataPacket(fakePlayer.id, fakePlayer.entityData.nonDefaultValues!!)
+            val setEntityDataPacket = ClientboundSetEntityDataPacket(playerAvatar.id, playerAvatar.entityData.nonDefaultValues!!)
 
             sendPacket(playerInfoUpdatePacket, player)
 
