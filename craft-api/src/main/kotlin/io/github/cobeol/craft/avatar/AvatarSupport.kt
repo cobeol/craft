@@ -2,6 +2,7 @@ package io.github.cobeol.craft.avatar
 
 import io.github.cobeol.craft.monun.loader.LibraryLoader
 import org.bukkit.Location
+import org.bukkit.Server
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
@@ -28,25 +29,40 @@ interface AvatarSupport {
     fun setAvatarInv(player: Player): Boolean
 
     /**
-     * 한 아바타의 패킷을 모든 플레이어에게 전송합니다.
+     * 한 아바타 생성 패킷을 모든 플레이어에게 전송합니다.
      */
-    fun sendAvatarPacket(name: String): Boolean
+    fun sendAvatarJoinPacket(name: String): Boolean
 
     /**
-     * 한 아바타의 패킷을 하나의 플레이에게만 전송합니다.
+     * 한 아바타 생성 패킷을 하나의 플레이에게만 전송합니다.
      */
-    fun sendAvatarPacket(name: String, player: Player): Boolean
+    fun sendAvatarJoinPacket(name: String, player: Player): Boolean
 
     /**
-     * 모든 아바타의 패킷을 모든 플레이어에게 전송합니다.
+     * 모든 아바타 생성 패킷을 모든 플레이어에게 전송합니다.
      */
-    fun sendAvatarPackets(): Boolean
+    fun sendAvatarJoinPackets(): Boolean
 
     /**
-     * 모든 아바타의 패킷을 하나의 플레이에게만 전송합니다.
+     * 모든 아바타 생성 패킷을 하나의 플레이에게만 전송합니다.
      */
-    fun sendAvatarPackets(player: Player): Boolean
+    fun sendAvatarJoinPackets(player: Player): Boolean
+
+    /**
+     * 한 아파타 제거 패킷을 하나의 플레이어에게만 전송합니다.
+     */
+    fun sendAvatarQuitPacket(name: String, player: Player): Boolean
+
+    /**
+     * 한 아파타 제거 페킷을 모든 플레이어에게 전송합니다.
+     */
+    fun sendAvatarQuitPacket(name: String): Boolean
 }
+
+internal var AvatarSupportNMS = LibraryLoader.loadNMS(AvatarSupport::class.java)
+
+val Server.avatar: AvatarSupport
+    get() = AvatarSupportNMS
 
 val Player.avatar: Avatar
     get() = Avatar(this)
@@ -76,5 +92,3 @@ class Avatar(private val player: Player) {
         }
     }
 }
-
-internal val AvatarSupportNMS = LibraryLoader.loadNMS(AvatarSupport::class.java)

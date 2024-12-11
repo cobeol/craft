@@ -31,6 +31,7 @@ import org.bukkit.inventory.Inventory
 import java.net.URI
 import java.util.UUID
 import com.mojang.datafixers.util.Pair
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket
 
 class NMSAvatarSupport: AvatarSupport {
     val avatars: HashMap<String, ServerPlayer> = hashMapOf()
@@ -105,7 +106,8 @@ class NMSAvatarSupport: AvatarSupport {
                 )
                 val equipmentPacket = ClientboundSetEquipmentPacket(playerAvatar.id, equipmentList)
 
-                sendPacket(equipmentPacket, player)
+                val connection = (player as CraftPlayer).handle.connection
+                connection.send(equipmentPacket)
             }
         }
     }
@@ -198,42 +200,19 @@ class NMSAvatarSupport: AvatarSupport {
             return false
 
         avatars[player.name] = playerAvatar
-        sendAvatarPacket(player.name)
+        sendAvatarJoinPacket(player.name)
 
         return true
     }
 
-    override fun sendAvatarPackets(): Boolean {
-        avatars.keys.forEach { name ->
-            sendAvatarPacket(name)
-        }
-
-        return true
-    }
-
-    override fun sendAvatarPackets(player: Player): Boolean {
-        avatars.keys.forEach { name ->
-            sendAvatarPacket(name, player)
-        }
-
-        return true
-    }
-
-    override fun sendAvatarPacket(name: String): Boolean {
-        Bukkit.getOnlinePlayers().forEach { player ->
-            sendAvatarPacket(name, player)
-        }
-
-        return true
-    }
-
-    override fun sendAvatarPacket(name: String, player: Player): Boolean {
+    override fun sendAvatarJoinPacket(name: String, player: Player): Boolean {
         val playerAvatar = getAvatar(name)
         if (playerAvatar == null)
             return false
 
         playerAvatar.also {
-            setConnection(playerAvatar, (player as CraftPlayer).handle.connection)
+            val connection = (player as CraftPlayer).handle.connection
+            setConnection(playerAvatar, connection)
 
             val playerInfoUpdatePacket = ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, playerAvatar)
             val addEntityPacket = ClientboundAddEntityPacket(
@@ -251,10 +230,34 @@ class NMSAvatarSupport: AvatarSupport {
             )
             val setEntityDataPacket = ClientboundSetEntityDataPacket(playerAvatar.id, playerAvatar.entityData.nonDefaultValues!!)
 
-            sendPacket(playerInfoUpdatePacket, player)
+            connection.send(playerInfoUpdatePacket)
 
-            sendPacket(addEntityPacket, player)
-            sendPacket(setEntityDataPacket, player)
+            connection.send(addEntityPacket)
+            connection.send(setEntityDataPacket)
+        }
+
+        return true
+    }
+
+    override fun sendAvatarJoinPackets(): Boolean {
+        avatars.keys.forEach { name ->
+            sendAvatarJoinPacket(name)
+        }
+
+        return true
+    }
+
+    override fun sendAvatarJoinPackets(player: Player): Boolean {
+        avatars.keys.forEach { name ->
+            sendAvatarJoinPacket(name, player)
+        }
+
+        return true
+    }
+
+    override fun sendAvatarJoinPacket(name: String): Boolean {
+        Bukkit.getOnlinePlayers().forEach { player ->
+            sendAvatarJoinPacket(name, player)
         }
 
         return true
@@ -271,9 +274,9 @@ class NMSAvatarSupport: AvatarSupport {
         }
     }
 
-    fun sendPacket(packet: Packet<*>, player: Player) {
-        (player as CraftPlayer).handle.connection.send(packet)
-    }
+//    fun sendPacket(packet: Packet<*>, player: Player) {
+//        (player as CraftPlayer).handle.connection.send(packet)
+//    }
 
     fun getTextrue(uniqueId: UUID): Property {
         val gson = Gson()
@@ -288,5 +291,33 @@ class NMSAvatarSupport: AvatarSupport {
 
              Property("textures", texture, signature)
         }
+    }
+
+    override fun sendAvatarQuitPacket(name: String, player: Player): Boolean {
+        val playerAvatar = getAvatar(name)
+        if (playerAvatar == null)
+            return false
+
+        val connection = (player as CraftPlayer).handle.connection
+        setConnection(playerAvatar, connection)
+
+        val playerInfoRemovePacket = ClientboundPlayerInfoRemovePacket(listOf(playerAvatar.uuid))
+        val removeEntityPacket = ClientboundRemoveEntitiesPacket(playerAvatar.id)
+
+        connection.send(removeEntityPacket)
+        connection.send(playerInfoRemovePacket)
+
+        playerAvatar.remove(Entity.RemovalReason.DISCARDED)
+        avatars.remove(name)
+
+        return true
+    }
+
+    override fun sendAvatarQuitPacket(name: String): Boolean {
+        Bukkit.getOnlinePlayers().forEach { player ->
+            sendAvatarQuitPacket(name, player)
+        }
+
+        return true
     }
 }
