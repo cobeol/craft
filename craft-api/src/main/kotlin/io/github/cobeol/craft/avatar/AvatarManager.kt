@@ -14,9 +14,9 @@ interface AvatarManager {
 
     fun getInventory(player: Player): Inventory?
 
-    fun setInvToFakeInv(player: Player): Boolean
+    fun setAvatarInvToInv(player: Player): Boolean
 
-    fun setFakeInvToInv(player: Player): Boolean
+    fun setInvToAvatarInv(player: Player): Boolean
 }
 
 interface AvatarInternal {

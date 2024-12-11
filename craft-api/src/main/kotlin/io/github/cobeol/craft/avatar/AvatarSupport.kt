@@ -6,16 +6,16 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
 interface AvatarSupport {
-    fun createFake(player: Player, location: Location): Boolean
+    fun createAvatar(player: Player, location: Location): Boolean
 
-    fun deleteFake(name: String): Boolean
+    fun deleteAvatar(name: String): Boolean
 
-    fun getFakeInv(name: String): Inventory?
+    fun getAvatarInv(name: String): Inventory?
 
     /**
      * [AvatarHolder]의 [Inventory]를 아바타 인벤토리로 동기화합니다.
      */
-    fun setFakeInv(name: String, inventory: Inventory): Boolean
+    fun setAvatarInv(name: String, inventory: Inventory): Boolean
 
     /**
      * 아바타의 인벤토리를 인벤토리로 동기화합니다
@@ -25,54 +25,54 @@ interface AvatarSupport {
     /**
      * 인벤토리를 아바타의 인벤토리로 동기화합니다
      */
-    fun setFakeInv(player: Player): Boolean
+    fun setAvatarInv(player: Player): Boolean
 
     /**
      * 한 아바타의 패킷을 모든 플레이어에게 전송합니다.
      */
-    fun sendFakePacket(name: String): Boolean
+    fun sendAvatarPacket(name: String): Boolean
 
     /**
      * 한 아바타의 패킷을 하나의 플레이에게만 전송합니다.
      */
-    fun sendFakePacket(name: String, player: Player): Boolean
+    fun sendAvatarPacket(name: String, player: Player): Boolean
 
     /**
      * 모든 아바타의 패킷을 모든 플레이어에게 전송합니다.
      */
-    fun sendFakePackets(): Boolean
+    fun sendAvatarPackets(): Boolean
 
     /**
      * 모든 아바타의 패킷을 하나의 플레이에게만 전송합니다.
      */
-    fun sendFakePackets(player: Player): Boolean
+    fun sendAvatarPackets(player: Player): Boolean
 }
 
-val Player.fake: Fake
-    get() = Fake(this)
+val Player.avatar: Avatar
+    get() = Avatar(this)
 
-class Fake(private val player: Player) {
-    val inventory = FakeInv()
+class Avatar(private val player: Player) {
+    val inventory = AvatarInv()
 
     fun create(): Boolean {
-        return AvatarSupportNMS.createFake(player, player.location)
+        return AvatarSupportNMS.createAvatar(player, player.location)
     }
 
     fun delete(): Boolean {
-        return AvatarSupportNMS.deleteFake(player.name)
+        return AvatarSupportNMS.deleteAvatar(player.name)
     }
 
-    inner class FakeInv {
+    inner class AvatarInv {
         fun get(): Inventory? {
-            return AvatarSupportNMS.getFakeInv(player.name)
+            return AvatarSupportNMS.getAvatarInv(player.name)
         }
 
         fun setInv(): Boolean {
             return AvatarSupportNMS.setInv(player)
         }
 
-        fun setFakeInv(): Boolean {
-            return AvatarSupportNMS.setFakeInv(player)
+        fun setAvatarInv(): Boolean {
+            return AvatarSupportNMS.setAvatarInv(player)
         }
     }
 }
