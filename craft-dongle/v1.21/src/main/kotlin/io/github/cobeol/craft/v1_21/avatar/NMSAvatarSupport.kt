@@ -4,13 +4,12 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
+import com.mojang.datafixers.util.Pair
+import io.github.cobeol.craft.avatar.AvatarPacketType
+import io.github.cobeol.craft.avatar.AvatarPacketType.*
 import io.github.cobeol.craft.avatar.AvatarSupport
-import net.minecraft.network.protocol.Packet
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
-import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
+import net.minecraft.network.chat.Component
+import net.minecraft.network.protocol.game.*
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.server.MinecraftServer
@@ -18,8 +17,9 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.network.ServerGamePacketListenerImpl
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.entity.Pose
+import net.minecraft.world.item.ItemStack
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.craftbukkit.CraftServer
@@ -29,9 +29,7 @@ import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import java.net.URI
-import java.util.UUID
-import com.mojang.datafixers.util.Pair
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket
+import java.util.*
 
 class NMSAvatarSupport: AvatarSupport {
     val avatars: HashMap<String, ServerPlayer> = hashMapOf()
@@ -184,80 +182,137 @@ class NMSAvatarSupport: AvatarSupport {
         // UUID, Name
         val profile = GameProfile(UUID.randomUUID(), "").apply {
             properties.removeAll("texture")
-            properties.put("textrue", getTextrue(player.uniqueId))
+            properties.put("textrue", getTexture(player.uniqueId))
         }
 
-        val playerAvatar = ServerPlayer(server, serverLevel, profile, (player as CraftPlayer).handle.clientInformation()).apply {
-            isInvisible = false
+        val avatar = ServerPlayer(server, serverLevel, profile, (player as CraftPlayer).handle.clientInformation()).apply {
+            customName = Component.literal(player.name)
+            isCustomNameVisible = false
+
             setPos(location.x, location.y, location.z)
+            setPose(Pose.SLEEPING)
         }
 
-        val entityData = playerAvatar.entityData.apply {
+        val entityData = avatar.entityData.apply {
             set(EntityDataAccessor(17, EntityDataSerializers.BYTE), 127.toByte())
         }
 
         if (entityData.nonDefaultValues == null)
             return false
 
-        avatars[player.name] = playerAvatar
-        sendAvatarJoinPacket(player.name)
-
-        return true
-    }
-
-    override fun sendAvatarJoinPacket(name: String, player: Player): Boolean {
-        val playerAvatar = getAvatar(name)
-        if (playerAvatar == null)
+        if (avatar.customName == null)
             return false
 
-        playerAvatar.also {
-            val connection = (player as CraftPlayer).handle.connection
-            setConnection(playerAvatar, connection)
-
-            val playerInfoUpdatePacket = ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, playerAvatar)
-            val addEntityPacket = ClientboundAddEntityPacket(
-                it.id,
-                it.uuid,
-                it.x,
-                it.y,
-                it.z,
-                it.xRot,
-                it.yRot,
-                it.type,
-                0,
-                it.deltaMovement,
-                0.0
-            )
-            val setEntityDataPacket = ClientboundSetEntityDataPacket(playerAvatar.id, playerAvatar.entityData.nonDefaultValues!!)
-
-            connection.send(playerInfoUpdatePacket)
-
-            connection.send(addEntityPacket)
-            connection.send(setEntityDataPacket)
-        }
+        avatars[avatar.customName!!.string] = avatar
+        sendPacket(ONE_JOIN_PACKET, avatar.customName!!.string)
 
         return true
     }
 
-    override fun sendAvatarJoinPackets(): Boolean {
-        avatars.keys.forEach { name ->
-            sendAvatarJoinPacket(name)
-        }
+    override fun sendPacket(type: AvatarPacketType, avatar: String, players: List<Player>): Boolean {
+        val avatar = getAvatar(avatar)
+        if (avatar != null)
+            if (type == ONE_JOIN_PACKET || type == ONE_QUIT_PACKET)
+                return sendPacketInternal(type, listOf(avatar), players)
 
-        return true
+        return false
     }
 
-    override fun sendAvatarJoinPackets(player: Player): Boolean {
-        avatars.keys.forEach { name ->
-            sendAvatarJoinPacket(name, player)
-        }
+    override fun sendPacket(type: AvatarPacketType, avatar: String, player: Player): Boolean {
+        val avatar = getAvatar(avatar)
+        if (avatar != null)
+            if (type == ONE_JOIN_PACKET || type == ONE_QUIT_PACKET)
+                return sendPacketInternal(type, listOf(avatar), listOf(player))
 
-        return true
+        return false
     }
 
-    override fun sendAvatarJoinPacket(name: String): Boolean {
-        Bukkit.getOnlinePlayers().forEach { player ->
-            sendAvatarJoinPacket(name, player)
+    override fun sendPacket(type: AvatarPacketType, avatars: List<String>, players: List<Player>): Boolean {
+        val avatars = avatars.map { getAvatar(it) }
+        if (!avatars.any { it == null })
+            if (type == SOME_JOIN_PACKET || type == SOME_QUIT_PACKET)
+                return sendPacketInternal(type, avatars.map { it!! }, players)
+
+        return false
+    }
+
+    override fun sendPacket(type: AvatarPacketType, avatars: List<String>, player: Player): Boolean {
+        val avatars = avatars.map { getAvatar(it) }
+        if (!avatars.any { it == null })
+            if (type == SOME_JOIN_PACKET || type == SOME_QUIT_PACKET)
+                return sendPacketInternal(type, avatars.map { it!! }, listOf(player))
+
+        return false
+    }
+
+    override fun sendPacket(type: AvatarPacketType, players: List<Player>): Boolean {
+        val avatars = avatars.values.map { it }
+        if (type == ALL_JOIN_PACKET || type == ALL_QUIT_PACKET)
+            return sendPacketInternal(type, avatars, players)
+
+        return false
+    }
+
+    override fun sendPacket(type: AvatarPacketType, player: Player): Boolean {
+        val avatars = avatars.values.map { it }
+        if (type == AvatarPacketType.ALL_JOIN_PACKET || type == AvatarPacketType.ALL_QUIT_PACKET)
+            return sendPacketInternal(type, avatars, listOf(player))
+
+        return false
+    }
+
+    fun sendPacketInternal(type: AvatarPacketType, avatars: List<ServerPlayer>, players: List<Player>): Boolean {
+        var players = players
+        if (players.isEmpty())
+            players = Bukkit.getOnlinePlayers() as MutableList<Player>
+
+        avatars.forEach {
+            if (it.customName != null) {
+
+                this.avatars.remove(it.customName!!.string)
+
+                players.forEach { player ->
+                    val connection = (player as CraftPlayer).handle.connection
+                    setConnection(it, connection)
+
+                    fun sendJoinPacket() {
+                        val playerInfoUpdatePacket = ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, it)
+                        val addEntityPacket = ClientboundAddEntityPacket(
+                            it.id, it.uuid,
+                            it.x, it.y, it.z, it.xRot, it.yRot,
+                            it.type, 0,
+                            it.deltaMovement, 0.0
+                        )
+
+                        val setEntityDataPacket = ClientboundSetEntityDataPacket(it.id, it.entityData.nonDefaultValues!!)
+
+                        connection.send(playerInfoUpdatePacket)
+
+                        connection.send(addEntityPacket)
+                        connection.send(setEntityDataPacket)
+                    }
+
+                    fun sendQuitPacket() {
+                        val playerInfoRemovePacket = ClientboundPlayerInfoRemovePacket(listOf(it.uuid))
+                        val removeEntityPacket = ClientboundRemoveEntitiesPacket(it.id)
+
+
+                        connection.send(removeEntityPacket)
+                        connection.send(playerInfoRemovePacket)
+
+                        it.remove(Entity.RemovalReason.DISCARDED)
+                    }
+
+                    when (type) {
+                        ONE_JOIN_PACKET -> sendJoinPacket()
+                        SOME_JOIN_PACKET -> sendJoinPacket()
+                        ALL_JOIN_PACKET -> sendJoinPacket()
+                        ONE_QUIT_PACKET -> sendQuitPacket()
+                        SOME_QUIT_PACKET -> sendQuitPacket()
+                        ALL_QUIT_PACKET -> sendQuitPacket()
+                    }
+                }
+            }
         }
 
         return true
@@ -274,11 +329,7 @@ class NMSAvatarSupport: AvatarSupport {
         }
     }
 
-//    fun sendPacket(packet: Packet<*>, player: Player) {
-//        (player as CraftPlayer).handle.connection.send(packet)
-//    }
-
-    fun getTextrue(uniqueId: UUID): Property {
+    fun getTexture(uniqueId: UUID): Property {
         val gson = Gson()
 
         val url = "https://sessionserver.mojang.com/session/minecraft/profile/$uniqueId?unsigned=false"
@@ -291,33 +342,5 @@ class NMSAvatarSupport: AvatarSupport {
 
              Property("textures", texture, signature)
         }
-    }
-
-    override fun sendAvatarQuitPacket(name: String, player: Player): Boolean {
-        val playerAvatar = getAvatar(name)
-        if (playerAvatar == null)
-            return false
-
-        val connection = (player as CraftPlayer).handle.connection
-        setConnection(playerAvatar, connection)
-
-        val playerInfoRemovePacket = ClientboundPlayerInfoRemovePacket(listOf(playerAvatar.uuid))
-        val removeEntityPacket = ClientboundRemoveEntitiesPacket(playerAvatar.id)
-
-        connection.send(removeEntityPacket)
-        connection.send(playerInfoRemovePacket)
-
-        playerAvatar.remove(Entity.RemovalReason.DISCARDED)
-        avatars.remove(name)
-
-        return true
-    }
-
-    override fun sendAvatarQuitPacket(name: String): Boolean {
-        Bukkit.getOnlinePlayers().forEach { player ->
-            sendAvatarQuitPacket(name, player)
-        }
-
-        return true
     }
 }

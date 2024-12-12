@@ -6,6 +6,15 @@ import org.bukkit.Server
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
+enum class AvatarPacketType {
+    ONE_JOIN_PACKET,
+    SOME_JOIN_PACKET,
+    ALL_JOIN_PACKET,
+    ONE_QUIT_PACKET,
+    SOME_QUIT_PACKET,
+    ALL_QUIT_PACKET,
+}
+
 interface AvatarSupport {
     fun createAvatar(player: Player, location: Location): Boolean
 
@@ -28,35 +37,64 @@ interface AvatarSupport {
      */
     fun setAvatarInv(player: Player): Boolean
 
-    /**
-     * 한 아바타 생성 패킷을 모든 플레이어에게 전송합니다.
-     */
-    fun sendAvatarJoinPacket(name: String): Boolean
+//    /**
+//     * 한 아바타 생성 패킷을 모든 플레이어에게 전송합니다.
+//     */
+//    fun sendAvatarJoinPacket(name: String): Boolean
+//
+//    /**
+//     * 한 아바타 생성 패킷을 하나의 플레이에게만 전송합니다.
+//     */
+//    fun sendAvatarJoinPacket(name: String, player: Player): Boolean
+//
+//    /**
+//     * 모든 아바타 생성 패킷을 모든 플레이어에게 전송합니다.
+//     */
+//    fun sendAvatarJoinPackets(): Boolean
+//
+//    /**
+//     * 모든 아바타 생성 패킷을 하나의 플레이에게만 전송합니다.
+//     */
+//    fun sendAvatarJoinPackets(player: Player): Boolean
+//
+//    /**
+//     * 한 아파타 제거 패킷을 하나의 플레이어에게만 전송합니다.
+//     */
+//    fun sendAvatarQuitPacket(name: String, player: Player): Boolean
+//
+//    /**
+//     * 한 아파타 제거 페킷을 모든 플레이어에게 전송합니다.
+//     */
+//    fun sendAvatarQuitPacket(name: String): Boolean
 
     /**
-     * 한 아바타 생성 패킷을 하나의 플레이에게만 전송합니다.
+     * [AvatarPacketType.ONE_JOIN_PACKET], [AvatarPacketType.ONE_QUIT_PACKET] 패킷을 전송하기 위한 함수입니다.
      */
-    fun sendAvatarJoinPacket(name: String, player: Player): Boolean
+    fun sendPacket(type: AvatarPacketType, avatar: String, players: List<Player> = listOf()): Boolean
+    /**
+     * [AvatarPacketType.ONE_JOIN_PACKET], [AvatarPacketType.ONE_QUIT_PACKET] 패킷을 전송하기 위한 함수입니다.
+     */
+    fun sendPacket(type: AvatarPacketType, avatar: String, player: Player): Boolean
+
 
     /**
-     * 모든 아바타 생성 패킷을 모든 플레이어에게 전송합니다.
+     * [AvatarPacketType.SOME_JOIN_PACKET], [AvatarPacketType.SOME_QUIT_PACKET] 패킷을 전송하기 위한 함수입니다.
      */
-    fun sendAvatarJoinPackets(): Boolean
+    fun sendPacket(type: AvatarPacketType, avatars: List<String>, players: List<Player> = listOf()): Boolean
+    /**
+     * [AvatarPacketType.SOME_JOIN_PACKET], [AvatarPacketType.SOME_QUIT_PACKET] 패킷을 전송하기 위한 함수입니다.
+     */
+    fun sendPacket(type: AvatarPacketType, avatars: List<String>, player: Player): Boolean
+
 
     /**
-     * 모든 아바타 생성 패킷을 하나의 플레이에게만 전송합니다.
+     * [AvatarPacketType.ALL_JOIN_PACKET], [AvatarPacketType.ALL_QUIT_PACKET] 패킷을 전송하기 위한 함수입니다.
      */
-    fun sendAvatarJoinPackets(player: Player): Boolean
-
+    fun sendPacket(type: AvatarPacketType, players: List<Player> = listOf()): Boolean
     /**
-     * 한 아파타 제거 패킷을 하나의 플레이어에게만 전송합니다.
+     * [AvatarPacketType.ALL_JOIN_PACKET], [AvatarPacketType.ALL_QUIT_PACKET] 패킷을 전송하기 위한 함수입니다.
      */
-    fun sendAvatarQuitPacket(name: String, player: Player): Boolean
-
-    /**
-     * 한 아파타 제거 페킷을 모든 플레이어에게 전송합니다.
-     */
-    fun sendAvatarQuitPacket(name: String): Boolean
+    fun sendPacket(type: AvatarPacketType, player: Player): Boolean
 }
 
 internal var AvatarSupportNMS = LibraryLoader.loadNMS(AvatarSupport::class.java)
