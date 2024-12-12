@@ -7,7 +7,9 @@ import com.mojang.authlib.properties.Property
 import com.mojang.datafixers.util.Pair
 import io.github.cobeol.craft.avatar.AvatarPacketType
 import io.github.cobeol.craft.avatar.AvatarPacketType.*
+import io.github.cobeol.craft.avatar.AvatarStatusKeys
 import io.github.cobeol.craft.avatar.AvatarSupport
+import io.github.cobeol.craft.monun.data.persistentData
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.*
 import net.minecraft.network.syncher.EntityDataAccessor
@@ -20,26 +22,27 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.Pose
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.phys.AABB
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.craftbukkit.CraftServer
 import org.bukkit.craftbukkit.CraftWorld
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftInventory
+import org.bukkit.entity.Interaction
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
+import org.bukkit.util.Transformation
+import org.joml.AxisAngle4f
+import org.joml.Vector3f
 import java.net.URI
 import java.util.*
 
 class NMSAvatarSupport: AvatarSupport {
     val avatars: HashMap<String, ServerPlayer> = hashMapOf()
 
-    fun getAvatar(name: String): ServerPlayer? {
-        return avatars.get(name)
-    }
-
     override fun deleteAvatar(name: String): Boolean {
-        val playerAvatar = getAvatar(name)
+        val playerAvatar = avatars.get(name)
         if (playerAvatar == null)
             return false
 
@@ -56,21 +59,21 @@ class NMSAvatarSupport: AvatarSupport {
     }
 
     override fun getAvatarInv(name: String): Inventory? {
-        val playerAvatar = getAvatar(name)
-        if (playerAvatar == null)
+        val avatar = avatars.get(name)
+        if (avatar == null)
             return null
 
-        return CraftInventory(playerAvatar.inventory)
+        return CraftInventory(avatar.inventory)
     }
 
-    // TODO 내일 핸들러 만들고 이케하고 저케하자
+    // TODO 내일 이거 완성해봅시다
     override fun setAvatarInv(name: String, inventory: Inventory): Boolean {
-        val playerAvatar = getAvatar(name)
-        if (playerAvatar == null)
+        val avatar = avatars.get(name)
+        if (avatar == null)
             return false
 
         val inv = (inventory as CraftInventory).inventory
-        val avatarInv = playerAvatar.inventory
+        val avatarInv = avatar.inventory
 
         if (inventory.size != (9 * 6))
             return false
@@ -88,21 +91,21 @@ class NMSAvatarSupport: AvatarSupport {
             avatarInv.armor[i - 3] = inv.getItem(i).copy()
         }
 
-        updateArmorData(playerAvatar)
+        updateArmorData(avatar)
 
         return true
     }
 
-    fun updateArmorData(playerAvatar: ServerPlayer) {
-        playerAvatar.also {
+    fun updateArmorData(avatar: ServerPlayer) {
+        avatar.also {
             Bukkit.getOnlinePlayers().forEach { player ->
                 val equipmentList = listOf(
-                    Pair(EquipmentSlot.HEAD, playerAvatar.inventory.armor[3]),
-                    Pair(EquipmentSlot.CHEST, playerAvatar.inventory.armor[2]),
-                    Pair(EquipmentSlot.LEGS, playerAvatar.inventory.armor[1]),
-                    Pair(EquipmentSlot.FEET, playerAvatar.inventory.armor[0])
+                    Pair(EquipmentSlot.HEAD, it.inventory.armor[3]),
+                    Pair(EquipmentSlot.CHEST, it.inventory.armor[2]),
+                    Pair(EquipmentSlot.LEGS, it.inventory.armor[1]),
+                    Pair(EquipmentSlot.FEET, it.inventory.armor[0])
                 )
-                val equipmentPacket = ClientboundSetEquipmentPacket(playerAvatar.id, equipmentList)
+                val equipmentPacket = ClientboundSetEquipmentPacket(it.id, equipmentList)
 
                 val connection = (player as CraftPlayer).handle.connection
                 connection.send(equipmentPacket)
@@ -111,7 +114,7 @@ class NMSAvatarSupport: AvatarSupport {
     }
 
     override fun setAvatarInv(player: Player): Boolean {
-        val playerAvatar = getAvatar(player.name)
+        val playerAvatar = avatars.get(player.name)
         if (playerAvatar == null)
             return false
 
@@ -142,7 +145,7 @@ class NMSAvatarSupport: AvatarSupport {
     }
 
     override fun setInv(player: Player): Boolean {
-        val playerAvatar = getAvatar(player.name)
+        val playerAvatar = avatars.get(player.name)
         if (playerAvatar == null)
             return false
 
@@ -172,9 +175,11 @@ class NMSAvatarSupport: AvatarSupport {
         return true
     }
 
-    override fun createAvatar(player: Player, location: Location): Boolean {
-        if (getAvatar(player.name) != null)
+    override fun createAvatar(player: Player): Boolean {
+        if (avatars.get(player.name) != null)
             return false
+
+        val location = player.location
 
         val server: MinecraftServer = (Bukkit.getServer() as CraftServer).server
         val serverLevel: ServerLevel = (location.world as CraftWorld).handle
@@ -188,8 +193,15 @@ class NMSAvatarSupport: AvatarSupport {
         val avatar = ServerPlayer(server, serverLevel, profile, (player as CraftPlayer).handle.clientInformation()).apply {
             customName = Component.literal(player.name)
             isCustomNameVisible = false
+            //collides = false, 밀림 방지인데 작동하지 않아 젠장..
 
             setPos(location.x, location.y, location.z)
+
+            yHeadRot = 90f
+            yRot = 135f
+//            yHeadRot = player.yaw - 70f
+//            yRot = player.yaw
+
             setPose(Pose.SLEEPING)
         }
 
@@ -203,14 +215,28 @@ class NMSAvatarSupport: AvatarSupport {
         if (avatar.customName == null)
             return false
 
+        // player.name = avatar.customName!!.string, 직관적인 구조를 위해 후자를 사용하였음. 가독성은 전자가 나을 수 있음.
         avatars[avatar.customName!!.string] = avatar
         sendPacket(ONE_JOIN_PACKET, avatar.customName!!.string)
+
+        val loc = location.clone().apply { x += 0.3f }
+        for (i in 0 until 3) {
+            location.world.spawn((loc.apply { x -= 0.6f }), Interaction::class.java) {
+                it.interactionWidth = 0.6f  // 기본 플레이어 너비: 0.6
+                it.interactionHeight = 0.2f  // 기본 플레이어 높이: 1.8 근데 눕혔어용
+
+                it.persistentData.let { data ->
+                    data[AvatarStatusKeys.playerNameKey] = avatar.customName!!.string
+                    data[AvatarStatusKeys.healthKey] = 20
+                }
+            }
+        }
 
         return true
     }
 
     override fun sendPacket(type: AvatarPacketType, avatar: String, players: List<Player>): Boolean {
-        val avatar = getAvatar(avatar)
+        val avatar = avatars[avatar]
         if (avatar != null)
             if (type == ONE_JOIN_PACKET || type == ONE_QUIT_PACKET)
                 return sendPacketInternal(type, listOf(avatar), players)
@@ -219,16 +245,11 @@ class NMSAvatarSupport: AvatarSupport {
     }
 
     override fun sendPacket(type: AvatarPacketType, avatar: String, player: Player): Boolean {
-        val avatar = getAvatar(avatar)
-        if (avatar != null)
-            if (type == ONE_JOIN_PACKET || type == ONE_QUIT_PACKET)
-                return sendPacketInternal(type, listOf(avatar), listOf(player))
-
-        return false
+        return sendPacket(type, listOf(avatar), listOf(player))
     }
 
     override fun sendPacket(type: AvatarPacketType, avatars: List<String>, players: List<Player>): Boolean {
-        val avatars = avatars.map { getAvatar(it) }
+        val avatars = avatars.map { this.avatars.get(it) }
         if (!avatars.any { it == null })
             if (type == SOME_JOIN_PACKET || type == SOME_QUIT_PACKET)
                 return sendPacketInternal(type, avatars.map { it!! }, players)
@@ -237,28 +258,18 @@ class NMSAvatarSupport: AvatarSupport {
     }
 
     override fun sendPacket(type: AvatarPacketType, avatars: List<String>, player: Player): Boolean {
-        val avatars = avatars.map { getAvatar(it) }
-        if (!avatars.any { it == null })
-            if (type == SOME_JOIN_PACKET || type == SOME_QUIT_PACKET)
-                return sendPacketInternal(type, avatars.map { it!! }, listOf(player))
-
-        return false
+        return sendPacket(type, avatars, listOf(player))
     }
 
     override fun sendPacket(type: AvatarPacketType, players: List<Player>): Boolean {
-        val avatars = avatars.values.map { it }
         if (type == ALL_JOIN_PACKET || type == ALL_QUIT_PACKET)
-            return sendPacketInternal(type, avatars, players)
+            return sendPacketInternal(type, avatars.values.map { it }, players)
 
         return false
     }
 
     override fun sendPacket(type: AvatarPacketType, player: Player): Boolean {
-        val avatars = avatars.values.map { it }
-        if (type == AvatarPacketType.ALL_JOIN_PACKET || type == AvatarPacketType.ALL_QUIT_PACKET)
-            return sendPacketInternal(type, avatars, listOf(player))
-
-        return false
+        return sendPacket(type, listOf(player))
     }
 
     fun sendPacketInternal(type: AvatarPacketType, avatars: List<ServerPlayer>, players: List<Player>): Boolean {
@@ -268,9 +279,6 @@ class NMSAvatarSupport: AvatarSupport {
 
         avatars.forEach {
             if (it.customName != null) {
-
-                this.avatars.remove(it.customName!!.string)
-
                 players.forEach { player ->
                     val connection = (player as CraftPlayer).handle.connection
                     setConnection(it, connection)
@@ -286,16 +294,21 @@ class NMSAvatarSupport: AvatarSupport {
 
                         val setEntityDataPacket = ClientboundSetEntityDataPacket(it.id, it.entityData.nonDefaultValues!!)
 
+
                         connection.send(playerInfoUpdatePacket)
 
                         connection.send(addEntityPacket)
                         connection.send(setEntityDataPacket)
+
+                        val rotateHeadPacket = ClientboundRotateHeadPacket(it, (it.yHeadRot * 256 / 360).toInt().toByte())
+                        connection.send(rotateHeadPacket)
                     }
 
                     fun sendQuitPacket() {
+                        this.avatars.remove(it.customName!!.string)
+
                         val playerInfoRemovePacket = ClientboundPlayerInfoRemovePacket(listOf(it.uuid))
                         val removeEntityPacket = ClientboundRemoveEntitiesPacket(it.id)
-
 
                         connection.send(removeEntityPacket)
                         connection.send(playerInfoRemovePacket)

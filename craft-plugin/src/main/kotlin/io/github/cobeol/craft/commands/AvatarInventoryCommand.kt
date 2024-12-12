@@ -27,11 +27,11 @@ class AvatarInventoryCommand(private val plugin: CraftPlugin): CommandExecutor {
             else
                 when (args[0]) {
                     "setInv" -> {
-                        avatarManager.setAvatarInvToInv(player)
+                        avatarManager.setInv(player)
                         player.openInventory(inventory)
                     }
-                    "setFakeInv" -> {
-                        avatarManager.setInvToAvatarInv(player)
+                    "setAvatarInv" -> {
+                        avatarManager.setAvatarInv(player)
                         player.openInventory(inventory)
                     }
                 }

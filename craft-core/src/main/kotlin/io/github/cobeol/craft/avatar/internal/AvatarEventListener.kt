@@ -1,7 +1,10 @@
 package io.github.cobeol.craft.avatar.internal
 
 import io.github.cobeol.craft.avatar.AvatarPacketType
+import io.github.cobeol.craft.avatar.AvatarStatusKeys
 import io.github.cobeol.craft.avatar.avatar
+import io.github.cobeol.craft.monun.data.persistentData
+import org.bukkit.entity.Interaction
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEntityEvent
@@ -18,5 +21,17 @@ class AvatarEventListener(private val plugin: JavaPlugin): Listener {
     @EventHandler
     fun onPlayerQuitEvent(event: PlayerQuitEvent) {
         plugin.server.avatar.sendPacket(AvatarPacketType.ONE_QUIT_PACKET, event.player.name)
+    }
+
+    @EventHandler
+    fun onPlayerInteractInteraction(event: PlayerInteractEntityEvent) {
+        val interaction = event.rightClicked as? Interaction ?: return
+
+        val player = event.player
+        interaction.persistentData[AvatarStatusKeys.playerNameKey]?.let {
+            val inventory = plugin.server.avatar.getAvatarInv(it)
+            if (inventory != null)
+                player.openInventory(inventory)
+        }
     }
 }

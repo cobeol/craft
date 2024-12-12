@@ -14,9 +14,15 @@ interface AvatarManager {
 
     fun getInventory(player: Player): Inventory?
 
-    fun setAvatarInvToInv(player: Player): Boolean
+    /**
+     * 아바타의 인벤토리를 인벤토리로 동기화합니다.
+     */
+    fun setInv(player: Player): Boolean
 
-    fun setInvToAvatarInv(player: Player): Boolean
+    /**
+     * 플레이어의 인벤토리를 아바타의 인벤토리로 동기화합니다.
+     */
+    fun setAvatarInv(player: Player): Boolean
 }
 
 interface AvatarInternal {

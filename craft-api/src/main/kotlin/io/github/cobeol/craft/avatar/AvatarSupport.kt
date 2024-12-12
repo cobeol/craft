@@ -1,5 +1,7 @@
 package io.github.cobeol.craft.avatar
 
+import io.github.cobeol.craft.monun.data.PersistentDataKey
+import io.github.cobeol.craft.monun.data.PersistentDataKeychain
 import io.github.cobeol.craft.monun.loader.LibraryLoader
 import org.bukkit.Location
 import org.bukkit.Server
@@ -16,7 +18,7 @@ enum class AvatarPacketType {
 }
 
 interface AvatarSupport {
-    fun createAvatar(player: Player, location: Location): Boolean
+    fun createAvatar(player: Player): Boolean
 
     fun deleteAvatar(name: String): Boolean
 
@@ -28,12 +30,12 @@ interface AvatarSupport {
     fun setAvatarInv(name: String, inventory: Inventory): Boolean
 
     /**
-     * 아바타의 인벤토리를 인벤토리로 동기화합니다
+     * 아바타의 인벤토리를 인벤토리로 동기화합니다.
      */
     fun setInv(player: Player): Boolean
 
     /**
-     * 인벤토리를 아바타의 인벤토리로 동기화합니다
+     * 인벤토리를 아바타의 인벤토리로 동기화합니다.
      */
     fun setAvatarInv(player: Player): Boolean
 
@@ -97,7 +99,7 @@ interface AvatarSupport {
     fun sendPacket(type: AvatarPacketType, player: Player): Boolean
 }
 
-internal var AvatarSupportNMS = LibraryLoader.loadNMS(AvatarSupport::class.java)
+internal val AvatarSupportNMS = LibraryLoader.loadNMS(AvatarSupport::class.java)//by lazy { LibraryLoader.loadNMS(AvatarSupport::class.java) }
 
 val Server.avatar: AvatarSupport
     get() = AvatarSupportNMS
@@ -109,7 +111,7 @@ class Avatar(private val player: Player) {
     val inventory = AvatarInv()
 
     fun create(): Boolean {
-        return AvatarSupportNMS.createAvatar(player, player.location)
+        return AvatarSupportNMS.createAvatar(player)
     }
 
     fun delete(): Boolean {
@@ -121,12 +123,24 @@ class Avatar(private val player: Player) {
             return AvatarSupportNMS.getAvatarInv(player.name)
         }
 
+        /**
+         * 아바타의 인벤토리를 인벤토리로 동기화합니다.
+         */
         fun setInv(): Boolean {
             return AvatarSupportNMS.setInv(player)
         }
 
+        /**
+         * 플레이어의 인벤토리를 아바타의 인벤토리로 동기화합니다.
+         */
         fun setAvatarInv(): Boolean {
             return AvatarSupportNMS.setAvatarInv(player)
         }
     }
+}
+
+object AvatarStatusKeys: PersistentDataKeychain() {
+    val playerNameKey = primitive<String>("playerName")
+
+    val healthKey = primitive<Int>("health")
 }
