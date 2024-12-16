@@ -5,7 +5,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import kotlin.collections.forEach
 
-fun _text(content: String, decorations: HashMap<TextDecoration, Boolean> = hashMapOf(), color: NamedTextColor = NamedTextColor.WHITE) =
+fun _text(content: String = "", decorations: HashMap<TextDecoration, Boolean> = hashMapOf(), color: NamedTextColor = NamedTextColor.WHITE) =
     text()
         .decoration(TextDecoration.ITALIC, false)
         .also {

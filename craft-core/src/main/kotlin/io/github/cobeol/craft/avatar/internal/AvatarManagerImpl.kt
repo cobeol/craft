@@ -24,11 +24,15 @@ class AvatarManagerImpl(plugin: JavaPlugin): AvatarManager {
         return player.avatar.inventory.get()
     }
 
-    override fun setInv(player: Player): Boolean {
-        return player.avatar.inventory.setInv()
+    override fun getWrappedInv(player: Player): Inventory? {
+        return player.avatar.inventory.getWrapped()
     }
 
-    override fun setAvatarInv(player: Player): Boolean {
-        return player.avatar.inventory.setAvatarInv()
+    override fun setPlayerInv(player: Player): Boolean {
+        return player.avatar.inventory.setPlayerInv()
+    }
+
+    override fun setInventory(player: Player): Boolean {
+        return player.avatar.inventory.setInventory()
     }
 }

@@ -26,13 +26,16 @@ class AvatarInventoryCommand(private val plugin: CraftPlugin): CommandExecutor {
             }
             else
                 when (args[0]) {
-                    "setInv" -> {
-                        avatarManager.setInv(player)
+                    "setInventory" -> {
+                        avatarManager.setPlayerInv(player)
                         player.openInventory(inventory)
                     }
                     "setAvatarInv" -> {
-                        avatarManager.setAvatarInv(player)
+                        avatarManager.setInventory(player)
                         player.openInventory(inventory)
+                    }
+                    "getWrapped" -> {
+                        avatarManager.getWrappedInv(player)?.let { player.openInventory(it) }
                     }
                 }
 

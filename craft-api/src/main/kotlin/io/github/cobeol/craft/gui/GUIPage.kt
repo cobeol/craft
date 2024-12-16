@@ -1,6 +1,6 @@
 package io.github.cobeol.craft.gui
 
-import io.github.cobeol.craft.inventory.setItemCoord
+import io.github.cobeol.craft.inventory.setItemInSlot
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -79,14 +79,14 @@ open class GUIPage: GUIfHolder {
 
             for (y in 0 until widget.height) {
                 for (x in 0 until widget.width) {
-                    val coordinate: Array<Int> = arrayOf(lastX + x, lastY + y)
+                    val slot: Array<Int> = arrayOf(lastX + x, lastY + y)
                     if (widget.holder != null)
-                        holders[coordinate.joinToString("_")] = widget.holder
+                        holders[slot.joinToString("_")] = widget.holder
 
                     if (widget.handler != null)
-                        handlers[coordinate.joinToString("_")] = widget.handler
+                        handlers[slot.joinToString("_")] = widget.handler
 
-                    guiF.setItemCoord(coordinate, widget.icon)
+                    guiF.setItemInSlot(slot, widget.icon)
                 }
             }
 
@@ -99,22 +99,22 @@ open class GUIPage: GUIfHolder {
         _inventory = guiF
     }
 
-    override fun onInventoryClick(slot: Int, player: Player) {
-        val x = (slot % 9)
-        val y = (slot / 9)
+    override fun onInventoryClick(index: Int, player: Player) {
+        val x = (index % 9)
+        val y = (index / 9)
 
-        val coordinate = "${x}_$y"
-        if (holders.containsKey(coordinate)) {
-            val holder: InventoryHolder? = holders.getValue(coordinate)
+        val slot = "${x}_$y"
+        if (holders.containsKey(slot)) {
+            val holder: InventoryHolder? = holders.getValue(slot)
             if (holder != null) {
                 inventory.close()
                 player.openInventory(holder.inventory)
             }
         }
 
-        if (handlers.containsKey(coordinate)) {
-            val handler: GUIWidgetHandler<out GUIPage>? = handlers.getValue(coordinate)
-            handler?.execute(slot, player)
+        if (handlers.containsKey(slot)) {
+            val handler: GUIWidgetHandler<out GUIPage>? = handlers.getValue(slot)
+            handler?.execute(index, player)
         }
     }
 

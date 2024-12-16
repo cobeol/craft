@@ -11,10 +11,10 @@ import org.bukkit.inventory.ItemStack
  *
  * @param coordinate 아이템을 넣을 위치(x, y)를 정합니다.
  */
-fun Inventory.setItemCoord(coordinate: Array<Int>, item: ItemStack) {
-    require(coordinate.size == 2) { "좌표는 무조건 2자리 길이여야 합니다." }
+fun Inventory.setItemInSlot(slot: Array<Int>, item: ItemStack) {
+    require(slot.size == 2) { "좌표는 무조건 2자리 길이여야 합니다." }
 
-    val (x, y) = coordinate
+    val (x, y) = slot
     require(x in 0..8) { "(x)좌표는 음수거나 너비보다 클 수 없습니다." }
 
     val height = this.size / 9
@@ -30,10 +30,10 @@ fun Inventory.setItemCoord(coordinate: Array<Int>, item: ItemStack) {
  *
  * @param coordinate 아이템을 가져올 위치(x, y)를 정합니다.
  */
-fun Inventory.getItemCoord(coordinate: Array<Int>): ItemStack? {
-    require(coordinate.size == 2) { "좌표는 무조건 2자리 길이여야 합니다." }
+fun Inventory.getItemInSlot(slot: Array<Int>): ItemStack? {
+    require(slot.size == 2) { "좌표는 무조건 2자리 길이여야 합니다." }
 
-    val (x, y) = coordinate
+    val (x, y) = slot
     require(x in 0..8) { "(x)좌표는 음수거나 너비보다 클 수 없습니다." }
 
     val height = this.size / 9

@@ -1,5 +1,6 @@
 package io.github.cobeol.craft.avatar.internal
 
+import io.github.cobeol.craft.avatar.AvatarInvHolder
 import io.github.cobeol.craft.avatar.AvatarPacketType
 import io.github.cobeol.craft.avatar.AvatarStatusKeys
 import io.github.cobeol.craft.avatar.avatar
@@ -7,6 +8,7 @@ import io.github.cobeol.craft.monun.data.persistentData
 import org.bukkit.entity.Interaction
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -14,12 +16,12 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class AvatarEventListener(private val plugin: JavaPlugin): Listener {
     @EventHandler
-    fun onPlayerJoinEvent(event: PlayerJoinEvent) {
+    fun onPlayerJoin(event: PlayerJoinEvent) {
         plugin.server.avatar.sendPacket(AvatarPacketType.ALL_JOIN_PACKET, event.player)
     }
 
     @EventHandler
-    fun onPlayerQuitEvent(event: PlayerQuitEvent) {
+    fun onPlayerQuit(event: PlayerQuitEvent) {
         plugin.server.avatar.sendPacket(AvatarPacketType.ONE_QUIT_PACKET, event.player.name)
     }
 
@@ -29,9 +31,16 @@ class AvatarEventListener(private val plugin: JavaPlugin): Listener {
 
         val player = event.player
         interaction.persistentData[AvatarStatusKeys.playerNameKey]?.let {
-            val inventory = plugin.server.avatar.getAvatarInv(it)
-            if (inventory != null)
-                player.openInventory(inventory)
+            val wrappedInv = plugin.server.avatar.getWrappedInv(it)
+            if (wrappedInv != null)
+                player.openInventory(wrappedInv)
         }
+    }
+
+    @EventHandler
+    fun onInventoryClose(event: InventoryCloseEvent) {
+        val holder = event.inventory.holder
+        if (holder is AvatarInvHolder)
+            plugin.server.avatar.setInventory(event.player.name, event.inventory)
     }
 }

@@ -5,11 +5,12 @@ import com.google.gson.JsonObject
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
 import com.mojang.datafixers.util.Pair
-import io.github.cobeol.craft.avatar.AvatarPacketType
-import io.github.cobeol.craft.avatar.AvatarPacketType.*
+import io.github.cobeol.craft.avatar.AvatarInvHolder
 import io.github.cobeol.craft.avatar.AvatarStatusKeys
 import io.github.cobeol.craft.avatar.AvatarSupport
+import io.github.cobeol.craft.inventory.setItemInSlot
 import io.github.cobeol.craft.monun.data.persistentData
+import io.github.cobeol.craft.protocol.AvatarPacket
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.*
 import net.minecraft.network.syncher.EntityDataAccessor
@@ -22,9 +23,8 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.Pose
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.phys.AABB
 import org.bukkit.Bukkit
-import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.craftbukkit.CraftServer
 import org.bukkit.craftbukkit.CraftWorld
 import org.bukkit.craftbukkit.entity.CraftPlayer
@@ -32,11 +32,9 @@ import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.entity.Interaction
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
-import org.bukkit.util.Transformation
-import org.joml.AxisAngle4f
-import org.joml.Vector3f
 import java.net.URI
 import java.util.*
+import kotlin.math.abs
 
 class NMSAvatarSupport: AvatarSupport {
     val avatars: HashMap<String, ServerPlayer> = hashMapOf()
@@ -66,34 +64,38 @@ class NMSAvatarSupport: AvatarSupport {
         return CraftInventory(avatar.inventory)
     }
 
-    // TODO 내일 이거 완성해봅시다
-    override fun setAvatarInv(name: String, inventory: Inventory): Boolean {
+    override fun getWrappedInv(name: String): Inventory? {
         val avatar = avatars.get(name)
         if (avatar == null)
-            return false
+            return null
 
-        val inv = (inventory as CraftInventory).inventory
         val avatarInv = avatar.inventory
+        val inv = AvatarInvHolder().inventory
 
-        if (inventory.size != (9 * 6))
-            return false
+        // 이건 그래픽 작업 전, 디버깅용?
+        org.bukkit.inventory.ItemStack(Material.BARRIER).also { BARRIER ->
+            inv.setItemInSlot(arrayOf(1, 0), BARRIER)
+            inv.setItemInSlot(arrayOf(2, 0), BARRIER)
 
-        for (i in (9 * 2) until inventory.size) {
-            inv.getItem(i).let {
-                avatarInv.setItem(i, it)
+            avatarInv.armor.forEachIndexed { index, item ->
+                inv.setItemInSlot(arrayOf(((3 + abs(4 - index)) - 1), 0), item.asBukkitCopy())
+            }
+
+            inv.setItemInSlot(arrayOf(7, 0), BARRIER)
+            inv.setItemInSlot(arrayOf(8, 0), BARRIER)
+
+            for (i in 0 until 9)
+                inv.setItemInSlot(arrayOf(i, 1), BARRIER)
+
+            avatarInv.items.forEachIndexed { index, item ->
+                val x = (index % 9)
+                val y = (index / 9).let { if (it == 0) 3 else (it - 1) }
+
+                inv.setItemInSlot(arrayOf(x, (y + 2)), item.asBukkitCopy())
             }
         }
 
-        avatarInv.setItem(8, inv.getItem(8).copy())
-        avatarInv.setItem(EquipmentSlot.MAINHAND.ordinal, ItemStack.EMPTY)
-
-        (3 until 7).forEach { i ->
-            avatarInv.armor[i - 3] = inv.getItem(i).copy()
-        }
-
-        updateArmorData(avatar)
-
-        return true
+        return inv
     }
 
     fun updateArmorData(avatar: ServerPlayer) {
@@ -113,22 +115,18 @@ class NMSAvatarSupport: AvatarSupport {
         }
     }
 
-    override fun setAvatarInv(player: Player): Boolean {
-        val playerAvatar = avatars.get(player.name)
-        if (playerAvatar == null)
+    override fun setPlayerInv(player: Player): Boolean {
+        val avatar = avatars.get(player.name)
+        if (avatar == null)
             return false
 
         val inv = (player as CraftPlayer).handle.inventory
-        val avatarInv = playerAvatar.inventory
+        val avatarInv = avatar.inventory
 
         for (i in 0 until player.inventory.size) {
             inv.getItem(i).let {
                 avatarInv.setItem(i, it)
             }
-        }
-
-        inv.getItem(EquipmentSlot.OFFHAND.ordinal).let {
-            avatarInv.setItem(EquipmentSlot.OFFHAND.ordinal, it)
         }
 
         inv.getItem(EquipmentSlot.MAINHAND.ordinal).let {
@@ -139,18 +137,18 @@ class NMSAvatarSupport: AvatarSupport {
             avatarInv.armor[index] = item?.copy() ?: ItemStack.EMPTY
         }
 
-        updateArmorData(playerAvatar)
+        updateArmorData(avatar)
 
         return true
     }
 
-    override fun setInv(player: Player): Boolean {
-        val playerAvatar = avatars.get(player.name)
-        if (playerAvatar == null)
+    override fun setInventory(player: Player): Boolean {
+        val avatar = avatars.get(player.name)
+        if (avatar == null)
             return false
 
         val inv = (player as CraftPlayer).handle.inventory
-        val avatarInv = playerAvatar.inventory
+        val avatarInv = avatar.inventory
 
         for (i in 0 until player.inventory.size) {
             avatarInv.getItem(i).let {
@@ -162,22 +160,48 @@ class NMSAvatarSupport: AvatarSupport {
             inv.armor[index] = item?.copy() ?: ItemStack.EMPTY
         }
 
-        avatarInv.getItem(EquipmentSlot.OFFHAND.ordinal).let {
-            inv.setItem(EquipmentSlot.OFFHAND.ordinal, it)
-        }
-
         avatarInv.getItem(EquipmentSlot.MAINHAND.ordinal).let {
             inv.setItem(EquipmentSlot.MAINHAND.ordinal, it)
         }
 
-        updateArmorData(playerAvatar)
+        updateArmorData(avatar)
+
+        return true
+    }
+
+    // 드디어 내일이가 왔다...!
+    override fun setInventory(name: String, inventory: Inventory): Boolean {
+        val avatar = avatars.get(name)
+        if (avatar == null)
+            return false
+
+        val inv = (inventory as CraftInventory).inventory
+        val avatarInv = avatar.inventory
+
+        if (inventory.size != 9 * 6)
+            return false
+
+        for (i in 0 until 4) {
+            avatarInv.armor[i] = inv.getItem(3 + abs(4 - i) - 1).copy()
+        }
+
+        for (index in 0 until (inventory.size - (9 * 2))) {
+            val x = (index % 9)
+            val y = (index / 9).let { if (it == 3) 0 else (it + 1) }
+
+            inv.getItem(index + (9 * 2)).let {
+                avatarInv.setItem((y * 9) + x, it)
+            }
+        }
+
+        updateArmorData(avatar)
 
         return true
     }
 
     override fun createAvatar(player: Player): Boolean {
-        if (avatars.get(player.name) != null)
-            return false
+//        if (avatars.get(player.name) != null)
+//            return false
 
         val location = player.location
 
@@ -190,6 +214,10 @@ class NMSAvatarSupport: AvatarSupport {
             properties.put("textrue", getTexture(player.uniqueId))
         }
 
+
+        // South, West, North
+        val direction = listOf(140f, 0f, 220f).random()
+
         val avatar = ServerPlayer(server, serverLevel, profile, (player as CraftPlayer).handle.clientInformation()).apply {
             customName = Component.literal(player.name)
             isCustomNameVisible = false
@@ -197,10 +225,10 @@ class NMSAvatarSupport: AvatarSupport {
 
             setPos(location.x, location.y, location.z)
 
-            yHeadRot = 90f
-            yRot = 135f
-//            yHeadRot = player.yaw - 70f
-//            yRot = player.yaw
+            val bodyYaw = direction % 360f
+            yHeadRot = if(bodyYaw >= 180f) bodyYaw else (bodyYaw + 180f + 90f)
+
+            yRot = bodyYaw
 
             setPose(Pose.SLEEPING)
         }
@@ -217,11 +245,24 @@ class NMSAvatarSupport: AvatarSupport {
 
         // player.name = avatar.customName!!.string, 직관적인 구조를 위해 후자를 사용하였음. 가독성은 전자가 나을 수 있음.
         avatars[avatar.customName!!.string] = avatar
-        sendPacket(ONE_JOIN_PACKET, avatar.customName!!.string)
+        sendPacket(AvatarPacket.ONE_JOIN, avatar.customName!!.string)
 
-        val loc = location.clone().apply { x += 0.3f }
+        val loc = location.clone().apply {
+            when (direction) {
+                140f -> z -= 0.3f
+                0f -> x += 0.3f
+                220f -> z += 0.3f
+            }
+        }
+
         for (i in 0 until 3) {
-            location.world.spawn((loc.apply { x -= 0.6f }), Interaction::class.java) {
+            location.world.spawn((loc.apply {
+                when (direction) {
+                    140f -> z += 0.6f
+                    0f -> x -= 0.6f
+                    220f -> z -= 0.6f
+                }
+            }), Interaction::class.java) {
                 it.interactionWidth = 0.6f  // 기본 플레이어 너비: 0.6
                 it.interactionHeight = 0.2f  // 기본 플레이어 높이: 1.8 근데 눕혔어용
 
@@ -235,44 +276,44 @@ class NMSAvatarSupport: AvatarSupport {
         return true
     }
 
-    override fun sendPacket(type: AvatarPacketType, avatar: String, players: List<Player>): Boolean {
+    override fun sendPacket(type: AvatarPacket, avatar: String, players: List<Player>): Boolean {
         val avatar = avatars[avatar]
         if (avatar != null)
-            if (type == ONE_JOIN_PACKET || type == ONE_QUIT_PACKET)
+            if (type == AvatarPacket.ONE_JOIN || type == AvatarPacket.ONE_QUIT)
                 return sendPacketInternal(type, listOf(avatar), players)
 
         return false
     }
 
-    override fun sendPacket(type: AvatarPacketType, avatar: String, player: Player): Boolean {
+    override fun sendPacket(type: AvatarPacket, avatar: String, player: Player): Boolean {
         return sendPacket(type, listOf(avatar), listOf(player))
     }
 
-    override fun sendPacket(type: AvatarPacketType, avatars: List<String>, players: List<Player>): Boolean {
+    override fun sendPacket(type: AvatarPacket, avatars: List<String>, players: List<Player>): Boolean {
         val avatars = avatars.map { this.avatars.get(it) }
         if (!avatars.any { it == null })
-            if (type == SOME_JOIN_PACKET || type == SOME_QUIT_PACKET)
+            if (type == AvatarPacket.SOME_JOIN || type == AvatarPacket.SOME_QUIT)
                 return sendPacketInternal(type, avatars.map { it!! }, players)
 
         return false
     }
 
-    override fun sendPacket(type: AvatarPacketType, avatars: List<String>, player: Player): Boolean {
+    override fun sendPacket(type: AvatarPacket, avatars: List<String>, player: Player): Boolean {
         return sendPacket(type, avatars, listOf(player))
     }
 
-    override fun sendPacket(type: AvatarPacketType, players: List<Player>): Boolean {
-        if (type == ALL_JOIN_PACKET || type == ALL_QUIT_PACKET)
+    override fun sendPacket(type: AvatarPacket, players: List<Player>): Boolean {
+        if (type == AvatarPacket.ALL_JOIN || type == AvatarPacket.ALL_QUIT)
             return sendPacketInternal(type, avatars.values.map { it }, players)
 
         return false
     }
 
-    override fun sendPacket(type: AvatarPacketType, player: Player): Boolean {
+    override fun sendPacket(type: AvatarPacket, player: Player): Boolean {
         return sendPacket(type, listOf(player))
     }
 
-    fun sendPacketInternal(type: AvatarPacketType, avatars: List<ServerPlayer>, players: List<Player>): Boolean {
+    fun sendPacketInternal(type: AvatarPacket, avatars: List<ServerPlayer>, players: List<Player>): Boolean {
         var players = players
         if (players.isEmpty())
             players = Bukkit.getOnlinePlayers() as MutableList<Player>
@@ -317,12 +358,12 @@ class NMSAvatarSupport: AvatarSupport {
                     }
 
                     when (type) {
-                        ONE_JOIN_PACKET -> sendJoinPacket()
-                        SOME_JOIN_PACKET -> sendJoinPacket()
-                        ALL_JOIN_PACKET -> sendJoinPacket()
-                        ONE_QUIT_PACKET -> sendQuitPacket()
-                        SOME_QUIT_PACKET -> sendQuitPacket()
-                        ALL_QUIT_PACKET -> sendQuitPacket()
+                        AvatarPacket.ONE_JOIN -> sendJoinPacket()
+                        AvatarPacket.SOME_JOIN -> sendJoinPacket()
+                        AvatarPacket.ALL_JOIN -> sendJoinPacket()
+                        AvatarPacket.ONE_QUIT -> sendQuitPacket()
+                        AvatarPacket.SOME_QUIT -> sendQuitPacket()
+                        AvatarPacket.ALL_QUIT -> sendQuitPacket()
                     }
                 }
             }
