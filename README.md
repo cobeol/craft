@@ -17,16 +17,19 @@
 > 아니라면? -> ```io.github.cobeol.craft.core```
 
 * ### Features
-    * ```StatusServer```: 모든 플레이어의 ```Status```를 관리하는 서버를 생성하는 클래스입니다.
-      * ```Status```: 플레이어의 정보를 나타내며, ```Stat```이 내부에 포함됩니다.
-        * ```Stat```: 플레이어의 능력치를 나타내기 위한 클래스입니다.
-    * ```EntityEventManager```: 특정 엔티티의 이벤트를 등록하기 위한 클래스입니다.
-      * ```TargetEntity```: 이벤트의 주체자와 대상이 나뉠 때, 뭘 기준으로 잡아서 이벤트를 호출할 것인지 정할 수 있어요. 
-    
+    * ```StatusServer```: 모든 플레이어의 ```Status```를 관리하는 서버입니다.
+        * ```Status```: 플레이어의 정보를 나타내며, ```Stat```이 내부에 포함됩니다.
+            * ```Stat```: 플레이어의 능력치를 나타내기 위한 클래스입니다.
+        * ```EntityEventManager```: 특정 엔티티의 이벤트를 등록할 수 있는 기능입니다.
+            * ```TargetEntity```: 이벤트의 주체자와 대상이 나뉠 때, 뭘 기준으로 잡아서 이벤트를 호출할 것인지 정할 수 있습니다.
+
+* ### TODO::Features
+    * ```GUIBuilder```: ```Status```를 플레이어에게 보여주기 위해, ```Entity:Interaction```이나 ```Inventory```로 표시해주는 기능입니다.
+    * ```PacketSupport```: ```ProtocolLib```에 의존하지 않고, ```Minecraft NMS```를 직접 이용하여 패킷을 전송하기 위한 기능입니다.
+    * ```SkillTree```: 특정 조건을 달성하면 찍을 수 있는 커스텀 스킬 트리입니다. 액티브나 패시브를 정할 수 있습니다.
 
 * ### Supported minecraft versions
     * (None)
-
 ---
 
 ### NOTE
