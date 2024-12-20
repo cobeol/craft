@@ -1,130 +1,118 @@
 package io.github.cobeol.craft.status
 
-import io.github.cobeol.craft.monun.config.Config
-import io.github.cobeol.craft.monun.config.RangeInt
 import org.bukkit.Material
-import org.bukkit.event.Listener
-import java.util.*
 import kotlin.math.floor
 import kotlin.math.pow
+import kotlin.random.Random
 
+/**
+ * [Status]에서 사용할, 능력치의 기초가 되는 클래스입니다.
+ */
 open class Stat {
     /**
-     * GUI에 보여줄 능력치의 준말을 정합니다
+     * [Stat]의 이름을 축약해서 보여주는 글자입니다
+     *
+     * ex) `Strength -> STR`
      */
-    @Config(required = false)
     var symbol: String? = null
         protected set
+        get() = (field ?: this.javaClass.simpleName).take(3).uppercase()
 
     /**
-     * 시작 능력치를 정합니다.
-     *
-     * !! >> [level]은 [maxLevel]보다 클 수 없습니다.
+     * [Stat]을 상징하는 아이템의 종류를 정합니다
      */
-    @Config(required = false)
-    @RangeInt(min = 0)
-    var level: Int = 0
-        protected set (value) {
-            field = value
-            maxExp = calculateMaxExp(value, 4)
-        }
-
-    /**
-     * 시작 시, 랜덤으로 증가하는 능력치의 최대 수치를 정합니다.
-     *
-     * !! >> {[level] + [randomLevel]}은 [maxLevel]보다 클 수 없습니다.
-     */
-    @Config(required = false)
-    @RangeInt(min = 0, max = 10)
-    var randomLevel: Int = 0
-        protected set (value) {
-            require(value <= maxLevel) { "{level + randomLevel}은 {maxLevel}보다 클 수 없습니다." }
-
-            field = value
-            if (level != 0)
-                return
-
-            level += (0..randomLevel).random()
-        }
-
-    /**
-     * 능력치가 이 수치에 도달하면, 더 이상 증가하지 않습니다.
-     */
-    @Config(required = false)
-    @RangeInt(min = 0)
-    var maxLevel: Int = 100
+    lateinit var icon: Material
         protected set
 
-    /**
-     * 시작 경험치를 정합니다.
-     */
-    var exp: Long = 0
-        protected set (value) {
+    var level: Int = 0
+        set(value) {
+            require(value >= 0) { "[level]은 음수일 수 없습니다." }
+            if (isLevelLocked || value > maxExp)
+                return
+
             field = value
-            if (value >= maxExp) {
-                if (isLocked) return
+        }
+
+    var maxLevel: Int = 25
+        set(value) {
+            require(value >= 0) { "[maxLevel]은 음수일 수 없습니다." }
+
+            field = value
+            if (level == 0)
+                level = calculateRandomLevel(value)
+        }
+
+    /**
+     * [Stat.maxLevel]의 상승폭을 정하는 변수입니다. 최초 선언에만 사용하는 것을 추천합니다
+     */
+    var coefficient: Int = 4
+        protected set
+
+    var exp: Long = 0L
+        set(value) {
+            require(value >= 0L) { "[exp]는 음수일 수 없습니다." }
+            if (isExpLocked)
+                return
+
+            field = value
+            maxExp.let { maxExp ->
+                if (value < maxExp)
+                    return
 
                 field -= maxExp
-                level ++
+                if (level < maxLevel)
+                    level += 1
             }
         }
 
-    /**
-     * 자동으로 계산되는 다음 능력치 상승까지의 경험치입니다.
-     */
-    var maxExp: Long = 0
-        protected set
+    val maxExp: Long
+        get() = calculateMaxExp(level, coefficient)
 
     /**
-     * 경험치가 처리되는 이벤트입니다.
+     * [Stat.level]의 값이 변하지 않도록 고정시킵니다
      */
-    @Config(required = true)
+    var isLevelLocked: Boolean = false
+//        protected set
+
+    /**
+     * [Stat.exp]의 값이 변하지 않도록 고정시킵니다
+     */
+    var isExpLocked: Boolean = false
+//        protected set
+
+//    fun isLevelLocked(locked: Boolean) = { isLevelLocked = locked }
+
+//    fun addLevel(level: Int) = { this.level += level }
+//
+//    fun setLevel(level: Int) = { this.level = level }
+
+//    fun isExpLocked(locked: Boolean) = { isExpLocked = locked }
+
+//    fun addExp(exp: Long) = { this.exp += exp }
+//
+//    fun setExp(exp: Long) = { this.exp = exp }
+
     lateinit var event: StatEventListener<out Stat>
-        protected set
+}
 
-    /**
-     * 능력을 표시하는 아이콘입니다.
-     */
-    @Config("icon", required = false)
-     var icon: Pair<Material, Int>? = null
-        protected set
+fun Stat.calculateRandomLevel(maxLevel: Int): Int {
+    require(maxLevel >= 0) { "[maxLevel]은 양수여야 합니다." }
 
-    /**
-     * 경험치에 도달해도, 능력치가 증가하는 것을 막습니다.
-     */
-    var isLocked: Boolean = false
-        protected set
+    val random = Random.nextDouble()
+    val weight = (1..maxLevel).sumOf { 1.0 / it.toDouble().pow(3) }
 
-    /**
-     * 누구의 스텟인가요?
-     */
-    @Config(required = true)
-    lateinit var uniqueId: UUID
-        protected set
-
-    /**
-     * 경험치를 추가합니다. [StatEventListener]에서 사용할 함수입니다.
-     *
-     * @param value 추가될 경험치로, 음수일 수 없습니다.
-     */
-    fun addExp(value: Long) {
-        require(value >= 0) { "{value}는 음수일 수 없습니다." }
-        exp += value
+    var cumulativeProb = 0.0
+    for (level in (1..maxLevel)) {
+        cumulativeProb += (1.0 / level.toDouble().pow(3)) / weight
+        if (random <= cumulativeProb)
+            return level - 1
     }
 
-    /**
-     * 능력치를 추가합니다. [StatEventListener]에서 사용할 함수입니다.
-     *
-     * @param value 추가될 능력치로, 음수일 수 없습니다.
-     */
-    fun addLevel(value: Int) {
-        require(value >= 0) { "{value}는 음수일 수 없습니다." }
-        level += value
-    }
+    // 물론 여기까지 불가능 ㅎ
+    return maxLevel
 }
 
 fun Stat.calculateMaxExp(level: Int, coefficient: Int = 1): Long {
+    require(level >= 0) { "[level]은 음수일 수 없습니다." }
     return floor(((level + 2 * 50.0 / 49.0).pow(4.5) * coefficient)).toLong()
 }
-
-open class StatEventListener<T: Stat>(stat: T): Listener

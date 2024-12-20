@@ -1,4 +1,4 @@
-# Cobeol Craft Api (1.21+)
+# Cobeol Craft Api //B (1.21+)
 
 [![Kotlin](https://img.shields.io/badge/java-21-ED8B00.svg?logo=java)](https://www.azul.com/)
 [![Kotlin](https://img.shields.io/badge/kotlin-1.9.20-585DEF.svg?logo=kotlin)](http://kotlinlang.org)
@@ -8,23 +8,30 @@
 
 ---
 
+> 코드 구조를 [24/12.16 패치](https://github.com/cobeol/craft/commit/eabc235a1be2e98d82a1af4a41ed5e95869ab9db) 이 후, 변경하였습니다.
+> <br>
+> 함수 자체는 유사하지만, 코드 스타일을 정의하여 완전히 통일할 예정입니다.
+> 
+> 예를 들면, <br>
+> NMS 간접 사용, 클래스 변수 접근 불가능 -> ```io.github.cobeol.craft.api```<br>
+> 아니라면? -> ```io.github.cobeol.craft.core```
+
 * ### Features
-    * 스탯, 스탯 이벤트 리스너
-    * 상태창 GUI {인벤토리, 블럭 디스플레이*}
-    * 인벤토리 (x, y) 좌표로 구분하는 함수
-    * PersistentData API 접근성 개선 ([mounun/tap](https://github.com/monun/tap): 일부만 사용하기 위해, 코드만 잘라왔습니다)
-    * 플레이어가 나가면 소환되는 [아바타](https://www.youtube.com/watch?v=ORCgczrTeUU) (어?..)
+    * ```StatusServer```: 모든 플레이어의 ```Status```를 관리하는 서버를 생성하는 클래스입니다.
+      * ```Status```: 플레이어의 정보를 나타내며, ```Stat```이 내부에 포함됩니다.
+        * ```Stat```: 플레이어의 능력치를 나타내기 위한 클래스입니다.
+    * ```EntityEventManager```: 특정 엔티티의 이벤트를 등록하기 위한 클래스입니다.
+      * ```TargetEntity```: 이벤트의 주체자와 대상이 나뉠 때, 뭘 기준으로 잡아서 이벤트를 호출할 것인지 정할 수 있어요. 
+    
 
 * ### Supported minecraft versions
-    * 1.21
-    * 1.21.1
+    * (None)
 
 ---
 
 ### NOTE
 
-[monun/tap](https://github.com/monun/tap), [monun/psychics](https://github.com/monun/psychics/)를 참고하여, 컨텐츠에서 사용할 플러그인을 만들기 위한 메인 플러그인 api를 제작하였습니다.
-
-사용자 정의 능력치나 스킬, 그리고 아바타 같은 것들이 있습니다.
+[monun/tap](https://github.com/monun/tap), [monun/psychics](https://github.com/monun/psychics/)를 참고하여, 컨텐츠에서 사용할 플러그인을 만들기 위한 메인 플러그인 api를 제작하였습니다.<br>
+*코드가 유사할 수 있어요ヽ(°〇°)ﾉ 난 코딩 벌레입니다  (˚ ˃̣̣̥⌓˂̣̣̥ )
 
 ---
