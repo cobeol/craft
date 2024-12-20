@@ -27,25 +27,24 @@ interface StatusServer<T: Status> {
     fun addPlayer(player: Player)
 
     /**
-     * 모든 [Player]의 `Status.Stats` 이벤트들을 등록합니다.
+     * 모든 [Player]의 [Status]//[Stats] 이벤트들을 등록합니다.
      */
     fun registerStats()
 
-
     /**
-     * 모든 [Player]의 `Status.Stats` 이벤트들을 제거합니다.
+     * 모든 [Player]의 [Status]//[Stats] 이벤트들을 제거합니다.
      */
     fun unregisterStats()
 
     /**
-     * 특정 [Player]의 `Status.Stats` 이벤트들을 등록합니다.
+     * 특정 [Player]의 [Status]//[Stats] 이벤트들을 등록합니다.
      *
      * @param player 대상
      */
     fun registerStats(player: Player)
 
     /**
-     * 특정 [Player]의 `Status.Stats` 이벤트들을 제거합니다.
+     * 특정 [Player]의 [Status]//[Stats] 이벤트들을 제거합니다.
      *
      * @param player 대상
      */
