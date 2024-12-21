@@ -26,6 +26,6 @@ abstract class AbstractInvRegion(
     override val minY: Int,
     override val maxX: Int,
     override val maxY: Int
-) : InvRegion {
+): InvRegion {
     abstract fun onClick(x: Int, y: Int, event: InventoryClickEvent)
 }

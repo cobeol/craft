@@ -33,7 +33,7 @@ class InvPaneImpl(
     minY: Int,
     maxX: Int,
     maxY: Int
-) : AbstractInvRegion(minX, minY, maxX, maxY), InvPane {
+): AbstractInvRegion(minX, minY, maxX, maxY), InvPane {
     private val frame by weak(frame)
 
     private var onClick: ((Int, Int, InventoryClickEvent) -> Unit)? by lazyVal()

@@ -41,7 +41,7 @@ import org.bukkit.inventory.ItemStack
 class InvFrameImpl(
     lines: Int,
     title: Component
-) : InvFrame, InvWindow {
+): InvFrame, InvWindow {
     private val inv = Bukkit.createInventory(this, lines * 9, title)
 
     private val slots = arrayListOf<InvSlotImpl>()

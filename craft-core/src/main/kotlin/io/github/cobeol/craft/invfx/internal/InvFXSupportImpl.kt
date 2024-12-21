@@ -41,7 +41,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.PluginClassLoader
 
-class InvFXSupportImpl : InvFXSupport, Listener {
+class InvFXSupportImpl: InvFXSupport, Listener {
     private var plugin: Plugin? = null
 
     override fun newInvFrame(lines: Int, title: Component, init: InvFrame.() -> Unit): InvFrame {

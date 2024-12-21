@@ -36,7 +36,7 @@ class InvListImpl<T>(
     maxY: Int,
     private val trim: Boolean,
     private val items: () -> List<T>
-) : AbstractInvRegion(minX, minY, maxX, maxY), InvList<T> {
+): AbstractInvRegion(minX, minY, maxX, maxY), InvList<T> {
     private val frame by weak(frame)
 
     override var index = 0

@@ -30,7 +30,7 @@ class InvSlotImpl(
     frame: InvFrameImpl,
     override val x: Int,
     override val y: Int
-) : InvSlot {
+): InvSlot {
     private val frame by weak(frame)
 
     internal var onClick: ((InventoryClickEvent) -> Unit)? by lazyVal()
