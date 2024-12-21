@@ -1,13 +1,18 @@
 package io.github.cobeol.craft.commands
 
+import io.github.cobeol.craft.invfx.InvFX
+import io.github.cobeol.craft.invfx.openFrame
 import io.github.cobeol.craft.plugin.CraftPlugin
 import io.github.cobeol.craft.sample.SampleStatus
 import io.github.cobeol.craft.status.StatusServer
 import net.kyori.adventure.text.Component
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.Material
+import org.bukkit.command.Command
+import org.bukkit.command.CommandExecutor
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
 
 class TestCommand(private val plugin: CraftPlugin): CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -18,6 +23,34 @@ class TestCommand(private val plugin: CraftPlugin): CommandExecutor {
             val stats = statusServer.status[player.uniqueId]?.stats
             stats?.let { player.sendMessage(Component.text(it.test)) }
         }
+
+        val invFrame = InvFX.frame(1, Component.text("SAMPLE_INVENTORY")) {
+            var clicked = false
+
+            onOpen { openEvent ->
+                openEvent.player.sendMessage("You opened the inventory")
+            }
+
+            onClose { closeEvent ->
+                if (!clicked) {
+                    closeEvent.player.sendMessage("Please click the diamond")
+                    object: BukkitRunnable() {
+                        override fun run() {
+                            player.openFrame(this@frame)
+                        }
+                    }.runTaskLater(plugin, 1)
+                }
+            }
+
+            slot (0, 0) {
+                item = ItemStack(Material.DIAMOND)
+                onClick { clickEvent ->
+                    clicked = true
+                    clickEvent.whoClicked.closeInventory()
+                }
+            }
+        }
+        player.openFrame(invFrame)
 
 //        val eventManager = EntityEventManager(plugin)
 //        eventManager.registerEvents(player, object : Listener {
