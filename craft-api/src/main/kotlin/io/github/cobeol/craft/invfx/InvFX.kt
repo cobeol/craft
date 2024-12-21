@@ -22,10 +22,33 @@ import io.github.cobeol.craft.invfx.frame.InvFrame
 import io.github.cobeol.craft.util.LibraryLoader
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 
 object InvFX {
     internal val support = LibraryLoader.loadImplement(InvFXSupport::class.java)
 
+    /**
+     * [InvFrame]로 가공한 [Inventory]를 생성합니다. 커스텀 핸들러를 정할 수 있습니다.
+     *
+     * ```
+     * // Example
+     * frame(6, Component.text("Test InvFrame")) {
+     *     onOpen { openEvent -> TODO() }
+     *
+     *     onClose { closeEvent -> TODO() }
+     *
+     *     onClickBottom { clickEvent -> TODO() }
+     *
+     *     onClickOutside { clickEvent -> TODO() }
+     *
+     *     onClick { clickEvent -> TODO() }
+     * }
+     * ```
+     *
+     * @param lines 높이
+     * @param title 이름
+     * @param init 이벤트 핸들러
+     */
     fun frame(lines: Int, title: Component, init: InvFrame.() -> Unit): InvFrame {
         return support.newInvFrame(lines, title, init)
     }

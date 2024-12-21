@@ -22,11 +22,27 @@ import io.github.cobeol.craft.invfx.InvDSL
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
+/**
+ * 특정 슬롯의 이벤트를 관리할 수 있습니다.
+ *
+ * ```
+ * // Example
+ * frame(6, Component.text("Test InvFrame")) {
+ *     slot (0, 0) {
+ *         item = ItemStack(Material.STONE)
+ *         onClick { clickEvent -> TODO() }
+ *     }
+ * }
+ * ```
+ */
 @InvDSL
 interface InvSlot {
     val x: Int
     val y: Int
     var item: ItemStack?
 
+    /**
+     * [InventoryClickEvent]:: 해당 좌표([x], [y])인 슬롯의 전용 클릭 이벤트
+     */
     fun onClick(onClick: (InventoryClickEvent) -> Unit)
 }

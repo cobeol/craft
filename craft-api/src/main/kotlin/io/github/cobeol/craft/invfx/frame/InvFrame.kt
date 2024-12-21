@@ -22,11 +22,52 @@ import io.github.cobeol.craft.invfx.InvDSL
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
+import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 
 @InvDSL
 interface InvFrame: InvSpace {
+    /**
+     * 해당 좌표(x, y)인 슬롯에 이벤트를 등록합니다.
+     *
+     * ```
+     * // Example
+     * frame(6, Component.text("Test InvFrame")) {
+     *     slot (0, 0) {
+     *         item = ItemStack(Material.STONE)
+     *         onClick { clickEvent -> TODO() }
+     *     }
+     * }
+     * ```
+     *
+     * @param x (x) 좌표
+     * @param y (y) 좌표
+     * @param init 이벤트 핸들러
+     */
     fun slot(x: Int, y: Int, init: InvSlot.() -> Unit): InvSlot
 
+    /**
+     * [InvFrame]//[InvSlot]들을 그룹으로 묶습니다.
+     *
+     * 이벤트 핸들러의 좌표는 모두 [InvFrame]을 기준으로 둡니다. ([InvPane]을 기준으로 0부터 시작하지 않습니다)
+     *
+     * ```
+     * frame(6, Component.text("Test InvFrame")) {
+     *     pane(0, 0, 4, 4) {
+     *         item(0, 1, item)
+     *         onClick { x, y, event ->
+     *             event.player.sendMessage(`${x == 0 && y == 1}`)
+     *         }
+     *     }
+     * }
+     * ```
+     *
+     * @param minX 시작 (x) 좌표
+     * @param minY 시작 (y) 좌표
+     * @param maxX 너비
+     * @param maxY 높이
+     * @param init 이벤트 핸들러
+     */
     fun pane(minX: Int, minY: Int, maxX: Int, maxY: Int, init: InvPane.() -> Unit): InvPane
 
     fun <T> list(
@@ -39,11 +80,51 @@ interface InvFrame: InvSpace {
         init: (InvList<T>.() -> Unit)? = null
     ): InvList<T>
 
+    /**
+     * [InventoryOpenEvent];: [InvFrame] 처음 열리면 실행되는 이벤트
+     *
+     * ```
+     * // Example
+     * frame(6, Component.text("Test InvFrame")) {
+     *     onOpen { openEvent -> TODO() }
+     * }
+     * ```
+     */
     fun onOpen(onOpen: (InventoryOpenEvent) -> Unit)
 
+    /**
+     * [InventoryCloseEvent]:: [InvFrame] 종료 이벤트
+     *
+     * ```
+     * // Example
+     * frame(6, Component.text("Test InvFrame")) {
+     *     onClose { closeEvent -> TODO() }
+     * }
+     * ```
+     */
     fun onClose(onClose: (InventoryCloseEvent) -> Unit)
 
+    /**
+     * [InventoryClickEvent]:: [Player]//[Inventory] 클릭 이벤트
+     *
+     * ```
+     * // Example
+     * frame(6, Component.text("Test InvFrame")) {
+     *     onClickBottom { clickBottomEvent -> TODO() }
+     * }
+     * ```
+     */
     fun onClickBottom(onClickBottom: (InventoryClickEvent) -> Unit)
 
+    /**
+     * [InventoryCloseEvent]:: [InvFrame] 외부 클릭 이벤트
+     *
+     * ```
+     * // Example
+     * frame(6, Component.text("Test InvFrame")) {
+     *     onClickOutside { clickOustideEvent -> TODO() }
+     * }
+     * ```
+     */
     fun onClickOutside(onClickOutside: (InventoryClickEvent) -> Unit)
 }
