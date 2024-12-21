@@ -9,7 +9,7 @@
  * For the full license text, see the LICENSE file in the project root.
  */
 
-package io.github.cobeol.craft.loader
+package io.github.cobeol.craft.util
 
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties

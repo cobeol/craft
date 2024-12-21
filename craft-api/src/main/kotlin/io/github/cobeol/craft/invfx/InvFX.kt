@@ -19,7 +19,7 @@
 package io.github.cobeol.craft.invfx
 
 import io.github.cobeol.craft.invfx.frame.InvFrame
-import io.github.cobeol.craft.loader.LibraryLoader
+import io.github.cobeol.craft.util.LibraryLoader
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 

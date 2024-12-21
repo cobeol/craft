@@ -1,7 +1,7 @@
 package io.github.cobeol.craft.status.internal
 
 import io.github.cobeol.craft.event.EntityEventManager
-import io.github.cobeol.craft.loader.getChildInstancesOfType
+import io.github.cobeol.craft.util.getChildInstancesOfType
 import io.github.cobeol.craft.status.Stat
 import io.github.cobeol.craft.status.Status
 import io.github.cobeol.craft.status.StatusServer

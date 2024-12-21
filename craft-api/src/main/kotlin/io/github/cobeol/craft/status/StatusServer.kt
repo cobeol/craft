@@ -11,7 +11,7 @@
 
 package io.github.cobeol.craft.status
 
-import io.github.cobeol.craft.loader.LibraryLoader
+import io.github.cobeol.craft.util.LibraryLoader
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
