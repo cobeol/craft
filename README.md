@@ -20,8 +20,9 @@
     * ```StatusServer```: 모든 플레이어의 ```Status```를 관리하는 서버입니다.
         * ```Status```: 플레이어의 정보를 나타내며, ```Stat```이 내부에 포함됩니다.
             * ```Stat```: 플레이어의 능력치를 나타내기 위한 클래스입니다.
-        * ```EntityEventManager```: 특정 엔티티의 이벤트를 등록할 수 있는 기능입니다.
-            * ```TargetEntity```: 이벤트의 주체자와 대상이 나뉠 때, 뭘 기준으로 잡아서 이벤트를 호출할 것인지 정할 수 있습니다.
+    * ```EntityEventManager```: 특정 엔티티의 이벤트를 등록할 수 있는 기능입니다.
+        * ```TargetEntity```: 이벤트의 주체자와 대상이 나뉠 때, 뭘 기준으로 잡아서 이벤트를 호출할 것인지 정할 수 있습니다.
+    * ```InvFx```: Api 하나로 처리하고 싶어서 \`[monun/invfx](https://github.com/monun/invfx/)\` 코드 그대로 가져왔어요.
 
 * ### TODO::Features
     * ```GUIBuilder```: ```Status```를 플레이어에게 보여주기 위해, ```Entity:Interaction```이나 ```Inventory```로 표시해주는 기능입니다.
