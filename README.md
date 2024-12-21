@@ -34,7 +34,9 @@
 
 ### NOTE
 
-[monun/tap](https://github.com/monun/tap), [monun/psychics](https://github.com/monun/psychics/)를 참고하여, 컨텐츠에서 사용할 플러그인을 만들기 위한 메인 플러그인 api를 제작하였습니다.<br>
-*코드가 유사할 수 있어요ヽ(°〇°)ﾉ 난 코딩 벌레입니다  (˚ ˃̣̣̥⌓˂̣̣̥ )
+[monun/tap](https://github.com/monun/tap), [monun/invfx](https://github.com/monun/invfx/)를 참고하여, 컨텐츠에서 사용할 플러그인을 제작하기 위해 만든 Api에요.<br/>
+*코드가 유사할 수 있어요ヽ(°〇°)ﾉ <br/>
+*팬이에요! <br/>
+*기능이 비슷한데 이름이 다른 건, 그건 그냥 내 취향이에요.
 
 ---
