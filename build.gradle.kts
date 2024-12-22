@@ -50,7 +50,7 @@ listOf(projectApi, projectCore).forEach { module ->
                 archiveClassifier.set("javadoc")
                 dependsOn("dokkaHtml")
 
-                from("$buildDir/dokka/html/") {
+                from(layout.buildDirectory.dir("dokka/html")) {
                     include("**")
                 }
             }
@@ -83,7 +83,7 @@ tasks {
 idea {
     module {
         excludeDirs.add(file(".server"))
-        excludeDirs.addAll(allprojects.map { it.buildDir })
+        excludeDirs.addAll(allprojects.map { it.layout.buildDirectory.get().asFile })
         excludeDirs.addAll(allprojects.map { it.file(".gradle") })
     }
 }
