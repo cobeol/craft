@@ -28,4 +28,5 @@ import org.bukkit.event.Listener
  *
  * @param stat 관리할 능력치
  */
+@Suppress("unused")
 open class StatEventListener<T: Stat>(stat: T): Listener

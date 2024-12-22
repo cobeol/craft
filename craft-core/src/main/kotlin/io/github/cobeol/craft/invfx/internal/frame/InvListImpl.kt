@@ -28,6 +28,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import kotlin.math.max
 
+@Suppress("unused")
 class InvListImpl<T>(
     frame: InvFrame,
     minX: Int,

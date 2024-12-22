@@ -23,6 +23,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
 @InvDSL
+@Suppress("unused")
 interface InvList<T>: InvRegion {
     var index: Int
 

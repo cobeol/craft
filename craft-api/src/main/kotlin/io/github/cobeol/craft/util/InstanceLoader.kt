@@ -20,6 +20,7 @@ import kotlin.reflect.full.starProjectedType
  *
  * @param T 부모 클래스
  */
+@Suppress("unused")
 inline fun <reified T : Any> Any.getChildInstancesOfType(): List<T> =
     this::class.memberProperties
         .filter { it.returnType.isSubtypeOf(T::class.starProjectedType) }
@@ -30,6 +31,7 @@ inline fun <reified T : Any> Any.getChildInstancesOfType(): List<T> =
  *
  * @param T 부모 클래스
  */
+@Suppress("unused")
 inline fun <reified T : Any> Any.getChildInstancesOfPerfectType(): List<T> =
     getChildInstancesOfType<T>().filter {
         it::class.simpleName?.endsWith(T::class.simpleName ?: "") == true

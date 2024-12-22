@@ -14,6 +14,7 @@ package io.github.cobeol.craft.event
 import org.bukkit.event.Event
 import java.util.concurrent.CopyOnWriteArrayList
 
+@Suppress("unused")
 class EntityHandlerList {
     private val handlers = CopyOnWriteArrayList<RegisteredEntityHandler>()
 

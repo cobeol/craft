@@ -42,11 +42,27 @@ class TestCommand(private val plugin: CraftPlugin): CommandExecutor {
                 }
             }
 
+            onClick { x, y, clickEvent ->
+                if (0 == x && 0 == y) {
+                    // Action
+                }
+            }
+
             slot (0, 0) {
                 item = ItemStack(Material.DIAMOND)
                 onClick { clickEvent ->
                     clicked = true
                     clickEvent.whoClicked.closeInventory()
+                }
+            }
+
+
+            pane(0, 0, 4, 1) {
+                item(0, 0, ItemStack(Material.STONE))
+                onClick { x, y, clickEvent ->
+                    if (x == 0 && y == 0) {
+                        // Action
+                    }
                 }
             }
         }

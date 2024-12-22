@@ -21,12 +21,15 @@ package io.github.cobeol.craft.util
 import java.lang.ref.WeakReference
 import kotlin.reflect.KProperty
 
+@Suppress("unused")
 fun <T> weak(referent: T) = WeakReference(referent)
 
+@Suppress("unused")
 operator fun <T> WeakReference<T>.getValue(any: Any?, property: KProperty<*>): T {
     return get() ?: error("NULL")
 }
 
+@Suppress("unused")
 class LazyVal<T> internal constructor() {
     var referent: T? = null
         set(value) {
@@ -35,12 +38,15 @@ class LazyVal<T> internal constructor() {
         }
 }
 
+@Suppress("unused")
 fun <T> lazyVal() = LazyVal<T>()
 
+@Suppress("unused")
 operator fun <T> LazyVal<T>.getValue(any: Any?, property: KProperty<*>): T? {
     return referent
 }
 
+@Suppress("unused")
 operator fun <T> LazyVal<T>.setValue(any: Any?, property: KProperty<*>, value: T) {
     referent = value
 }

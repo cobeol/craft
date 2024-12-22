@@ -21,6 +21,7 @@ package io.github.cobeol.craft.invfx.frame
 import io.github.cobeol.craft.invfx.InvDSL
 
 @InvDSL
+@Suppress("unused")
 interface InvRegion {
     val minX: Int
     val minY: Int

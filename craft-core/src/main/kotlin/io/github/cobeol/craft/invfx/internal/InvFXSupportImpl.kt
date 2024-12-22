@@ -41,6 +41,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.PluginClassLoader
 
+@Suppress("unused")
 class InvFXSupportImpl: InvFXSupport, Listener {
     private var plugin: Plugin? = null
 
@@ -129,5 +130,6 @@ class InvFXSupportImpl: InvFXSupport, Listener {
     }
 }
 
+@Suppress("unused")
 private val Inventory.window: InvWindow?
     get() = holder.takeIf { it is InvWindow } as? InvWindow

@@ -13,6 +13,7 @@ package io.github.cobeol.craft.event
 
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 
+@Suppress("unused")
 object DefaultProvider {
     object EntityDamageByEntity {
         object Damager : EntityProvider<EntityDamageByEntityEvent> {

@@ -21,6 +21,7 @@ package io.github.cobeol.craft.invfx.internal.frame
 import io.github.cobeol.craft.invfx.frame.InvRegion
 import org.bukkit.event.inventory.InventoryClickEvent
 
+@Suppress("unused")
 abstract class AbstractInvRegion(
     override val minX: Int,
     override val minY: Int,

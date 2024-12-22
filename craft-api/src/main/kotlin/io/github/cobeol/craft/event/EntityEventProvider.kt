@@ -14,6 +14,7 @@ package io.github.cobeol.craft.event
 import org.bukkit.event.Event
 import kotlin.reflect.KClass
 
+@Suppress("unused")
 class EventEntityProvider(
     val event: KClass<out Event>,
     val provider: EntityProvider<*>

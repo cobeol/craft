@@ -22,10 +22,10 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
-@Suppress("unused")
 /**
  * 특정 [Entity]의 전용 이벤트를 등록하고, 관리하기 위한 기능입니다.
  */
+@Suppress("unused")
 class EntityEventManager(private val plugin: Plugin) {
     private val handlers = ConcurrentHashMap<KClass<out Event>, EntityHandlerList>()
     private val providers = ConcurrentHashMap<KClass<out EntityProvider<*>>, EntityProvider<*>>()

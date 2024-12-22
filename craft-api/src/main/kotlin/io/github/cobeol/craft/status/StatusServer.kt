@@ -25,6 +25,7 @@ import java.util.*
  * val statusServer = StatusServer<Status>.create(plugin)
  * ```
  */
+@Suppress("unused")
 interface StatusServer<T: Status> {
     companion object : StatusInternal by LibraryLoader.loadImplement(StatusInternal::class.java)
 

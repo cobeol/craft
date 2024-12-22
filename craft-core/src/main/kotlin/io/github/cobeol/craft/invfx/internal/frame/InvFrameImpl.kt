@@ -38,6 +38,7 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
+@Suppress("unused")
 class InvFrameImpl(
     lines: Int,
     title: Component

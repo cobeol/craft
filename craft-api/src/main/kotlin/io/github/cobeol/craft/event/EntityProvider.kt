@@ -33,6 +33,7 @@ import kotlin.reflect.KClass
  *
  * @param T 이벤트 종류
  */
+@Suppress("unused")
 interface EntityProvider<T : Event> {
     /**
      * 이벤트에서 반환할 엔티티입니다.
@@ -56,6 +57,7 @@ interface EntityProvider<T : Event> {
  * }
  * ```
  */
+@Suppress("unused")
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class TargetEntity(val value: KClass<out EntityProvider<*>>)

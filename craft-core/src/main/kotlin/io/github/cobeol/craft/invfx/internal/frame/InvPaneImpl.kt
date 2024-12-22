@@ -27,6 +27,7 @@ import io.github.cobeol.craft.util.weak
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
+@Suppress("unused")
 class InvPaneImpl(
     frame: InvFrame,
     minX: Int,

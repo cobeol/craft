@@ -11,6 +11,7 @@
 
 package io.github.cobeol.craft.status
 
+@Suppress("unused")
 interface Status {
     val stats: Stats
 }
@@ -26,4 +27,5 @@ interface Status {
  * }
  * ```
  */
+@Suppress("unused")
 interface Stats

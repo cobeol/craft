@@ -19,11 +19,12 @@ import kotlin.random.Random
 /**
  * [Status]에서 사용할, 능력치의 기초가 되는 클래스입니다.
  */
+@Suppress("unused")
 open class Stat {
     /**
      * [Stat]의 이름을 축약해서 보여주는 글자입니다.
      *
-     * ex) `Strength -> STR`
+     * ex) `'Strength' -> 'STR'`
      */
     var symbol: String? = null
         protected set
@@ -54,7 +55,7 @@ open class Stat {
         }
 
     /**
-     * [Stat.maxLevel]의 상승폭을 정하는 변수입니다. 최초 선언에만 사용하는 것을 추천합니다.
+     * [Stat.maxLevel]의 상승폭을 정하는 변수입니다.
      */
     var coefficient: Int = 4
         protected set
@@ -62,6 +63,7 @@ open class Stat {
     var exp: Long = 0L
         set(value) {
             require(value >= 0L) { "[exp]는 음수일 수 없습니다." }
+
             if (isExpLocked)
                 return
 
@@ -80,28 +82,54 @@ open class Stat {
         get() = calculateMaxExp(level, coefficient)
 
     /**
-     * [Stat.level]의 값이 변하지 않도록 고정시킵니다.
+     * [Stat.level]의 값이 변하지 않도록 고정시킬 지, 정하는 옵션입니다.
      */
     var isLevelLocked: Boolean = false
-//        protected set
+        protected set
 
     /**
-     * [Stat.exp]의 값이 변하지 않도록 고정시킵니다.
+     * [Stat.exp]의 값이 변하지 않도록 고정시킬 지, 정하는 옵션입니다.
      */
     var isExpLocked: Boolean = false
-//        protected set
+        protected set
 
-//    fun isLevelLocked(locked: Boolean) = { isLevelLocked = locked }
+    /**
+     * [Stat.level]의 값이 변하지 않도록 고정시킬 지, 정합니다.
+     */
+    fun isLevelLocked(isLevelLocked: Boolean) = { this.isLevelLocked = isLevelLocked }
 
-//    fun addLevel(level: Int) = { this.level += level }
-//
-//    fun setLevel(level: Int) = { this.level = level }
+    /**
+     * [Stat.level]에 [level]만큼 추가합니다.
+     *
+     * @param level 레벨
+     */
+    fun addLevel(level: Int) = { this.level += level }
 
-//    fun isExpLocked(locked: Boolean) = { isExpLocked = locked }
+    /**
+     * [Stat.level]을 [level]로 정합니다.
+     *
+     * @param level 레벨
+     */
+    fun setLevel(level: Int) = { this.level = level }
 
-//    fun addExp(exp: Long) = { this.exp += exp }
-//
-//    fun setExp(exp: Long) = { this.exp = exp }
+    /**
+     * [Stat.exp]의 값이 변하지 않도록 고정시킬 지, 정합니다.
+     */
+    fun isExpLocked(isExpLocked: Boolean) = { this.isExpLocked = isExpLocked }
+
+    /**
+     * [Stat.exp]에 [exp]만큼 추가합니다.
+     *
+     * @param exp 경험치
+     */
+    fun addExp(exp: Long) = { this.exp += exp }
+
+    /**
+     * [Stat.exp]을 [exp]로 정합니다.
+     *
+     * @param exp 경험치
+     */
+    fun setExp(exp: Long) = { this.exp = exp }
 
     lateinit var event: StatEventListener<out Stat>
 }

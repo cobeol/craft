@@ -15,6 +15,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 
+@Suppress("unused")
 class RegisteredEntityHandler(
     val listener: Listener,
     val priority: EventPriority,
