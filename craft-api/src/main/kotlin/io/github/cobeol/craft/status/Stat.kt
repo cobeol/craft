@@ -21,7 +21,7 @@ import kotlin.random.Random
  */
 open class Stat {
     /**
-     * [Stat]의 이름을 축약해서 보여주는 글자입니다
+     * [Stat]의 이름을 축약해서 보여주는 글자입니다.
      *
      * ex) `Strength -> STR`
      */
@@ -30,7 +30,7 @@ open class Stat {
         get() = (field ?: this.javaClass.simpleName).take(3).uppercase()
 
     /**
-     * [Stat]을 상징하는 아이템의 종류를 정합니다
+     * [Stat]을 상징하는 아이템의 종류입니다.
      */
     lateinit var icon: Material
         protected set
@@ -54,7 +54,7 @@ open class Stat {
         }
 
     /**
-     * [Stat.maxLevel]의 상승폭을 정하는 변수입니다. 최초 선언에만 사용하는 것을 추천합니다
+     * [Stat.maxLevel]의 상승폭을 정하는 변수입니다. 최초 선언에만 사용하는 것을 추천합니다.
      */
     var coefficient: Int = 4
         protected set
@@ -80,13 +80,13 @@ open class Stat {
         get() = calculateMaxExp(level, coefficient)
 
     /**
-     * [Stat.level]의 값이 변하지 않도록 고정시킵니다
+     * [Stat.level]의 값이 변하지 않도록 고정시킵니다.
      */
     var isLevelLocked: Boolean = false
 //        protected set
 
     /**
-     * [Stat.exp]의 값이 변하지 않도록 고정시킵니다
+     * [Stat.exp]의 값이 변하지 않도록 고정시킵니다.
      */
     var isExpLocked: Boolean = false
 //        protected set
