@@ -33,7 +33,9 @@ interface InvSpace {
      * ```
      * // Example
      * frame(6, Component.text("Test InvFrame")) {
-     *     onClick { x, y, clickEvent -> TODO() }
+     *     onClick { x, y, clickEvent ->
+     *         // Execute
+     *     }
      * }
      * ```
      */

@@ -33,9 +33,8 @@ class EntityHandlerList {
             if (handler.provider.event.isInstance(event)) {
                 val provider = handler.provider.provider as EntityProvider<Event>
                 val entity = provider.getTarget(event)
-                if (entity != null) {
+                if (entity != null)
                     handler.callEvent(event)
-                }
             }
         }
     }

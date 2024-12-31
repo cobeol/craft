@@ -36,18 +36,25 @@ open class Stat {
     lateinit var icon: Material
         protected set
 
+
+    /**
+     * [Stat]의 레벨입니다.
+     */
     var level: Int = 0
         set(value) {
-            require(value >= 0) { "[level]은 음수일 수 없습니다." }
+            require(value >= 0) { "{level\$$value}(은)는 음수일 수 없습니다." }
             if (isLevelLocked || value > maxExp)
                 return
 
             field = value
         }
 
+    /**
+     * [Stat.level]의 최대치를 정합니다.
+     */
     var maxLevel: Int = 25
         set(value) {
-            require(value >= 0) { "[maxLevel]은 음수일 수 없습니다." }
+            require(value >= 0) { "{maxLevel\$$value}(은)는 음수일 수 없습니다." }
 
             field = value
             if (level == 0)
@@ -55,14 +62,17 @@ open class Stat {
         }
 
     /**
-     * [Stat.maxLevel]의 상승폭을 정하는 변수입니다.
+     * [Stat.maxLevel]의 상승폭입니다.
      */
     var coefficient: Int = 4
         protected set
 
+    /**
+     * 경험치입니다.
+     */
     var exp: Long = 0L
         set(value) {
-            require(value >= 0L) { "[exp]는 음수일 수 없습니다." }
+            require(value >= 0L) { "{exp\$$value}(은)는 음수일 수 없습니다." }
 
             if (isExpLocked)
                 return
@@ -78,6 +88,9 @@ open class Stat {
             }
         }
 
+    /**
+     * [Stat.level]이 오르기 까지의 [Stat.exp] 요구량입니다.
+     */
     val maxExp: Long
         get() = calculateMaxExp(level, coefficient)
 
@@ -141,7 +154,7 @@ fun Stat.calculateRandomLevel(maxLevel: Int): Int {
     val weight = (1..maxLevel).sumOf { 1.0 / it.toDouble().pow(3) }
 
     var cumulativeProb = 0.0
-    for (level in (1..maxLevel)) {
+    for (level in 1..maxLevel) {
         cumulativeProb += (1.0 / level.toDouble().pow(3)) / weight
         if (random <= cumulativeProb)
             return level - 1

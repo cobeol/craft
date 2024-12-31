@@ -33,15 +33,25 @@ object InvFX {
      * ```
      * // Example
      * frame(6, Component.text("Test InvFrame")) {
-     *     onOpen { openEvent -> TODO() }
+     *     onOpen { openEvent ->
+     *         // Execute
+     *     }
      *
-     *     onClose { closeEvent -> TODO() }
+     *     onClose { closeEvent ->
+     *         // Execute
+     *     }
      *
-     *     onClickBottom { clickEvent -> TODO() }
+     *     onClickBottom { clickEvent ->
+     *         // Execute
+     *     }
      *
-     *     onClickOutside { clickEvent -> TODO() }
+     *     onClickOutside { clickEvent ->
+     *         // Execute
+     *     }
      *
-     *     onClick { clickEvent -> TODO() }
+     *     onClick { clickEvent ->
+     *         // Execute
+     *     }
      * }
      * ```
      *

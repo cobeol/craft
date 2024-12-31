@@ -35,7 +35,9 @@ interface InvFrame: InvSpace {
      * frame(6, Component.text("Test InvFrame")) {
      *     slot (0, 0) {
      *         item = ItemStack(Material.STONE)
-     *         onClick { clickEvent -> TODO() }
+     *         onClick { clickEvent ->
+     *             // Execute
+     *         }
      *     }
      * }
      * ```
@@ -86,7 +88,9 @@ interface InvFrame: InvSpace {
      * ```
      * // Example
      * frame(6, Component.text("Test InvFrame")) {
-     *     onOpen { openEvent -> TODO() }
+     *     onOpen { openEvent ->
+     *         // Execute
+     *     }
      * }
      * ```
      */
@@ -98,7 +102,9 @@ interface InvFrame: InvSpace {
      * ```
      * // Example
      * frame(6, Component.text("Test InvFrame")) {
-     *     onClose { closeEvent -> TODO() }
+     *     onClose { closeEvent ->
+     *         // Execute
+     *     }
      * }
      * ```
      */
@@ -110,7 +116,9 @@ interface InvFrame: InvSpace {
      * ```
      * // Example
      * frame(6, Component.text("Test InvFrame")) {
-     *     onClickBottom { clickBottomEvent -> TODO() }
+     *     onClickBottom { clickBottomEvent ->
+     *         // Execute
+     *     }
      * }
      * ```
      */
@@ -122,7 +130,9 @@ interface InvFrame: InvSpace {
      * ```
      * // Example
      * frame(6, Component.text("Test InvFrame")) {
-     *     onClickOutside { clickOustideEvent -> TODO() }
+     *     onClickOutside { clickOustideEvent ->
+     *         // Execute
+     *     }
      * }
      * ```
      */
